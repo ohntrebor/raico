@@ -43,7 +43,7 @@ OPENAI_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxx // Preencha seu Token
 GITHUB_TOKEN=yyyyyyyyyyy // Preencha seu Token
 PR_NUMBER=x // Preencha o número do PR que quer testar
 PROMPT_PATH=scripts/prompts/default_prompt.txt
-GITHUB_REPOSITORY=ToFood/tofood-ai // Preencha seu repositório
+GITHUB_REPOSITORY=ohntrebor/raico // Preencha seu repositório
 OPENAI_MODEL=gpt-3.5-turbo
 ```
 
@@ -52,8 +52,8 @@ OPENAI_MODEL=gpt-3.5-turbo
 ### **1. Clone o Repositório**
 
 ```bash
-git clone https://github.com/ToFood/tofood-ai.git
-cd tofood-ai
+git clone https://github.com/ohntrebor/raico.git
+cd raico
 ```
 
 ### **2. Configure o Ambiente Virtual**
@@ -78,7 +78,7 @@ Execute o Script de Teste
 ## Para revisar o PR com IA, você deve criar um arquivo.yml em seu repostório: .github\workflows\xxxxx.yml (lembre-se de cadastrar seu OPENAI_API_KEY no secrets do seu repositório)
 
 ```yaml
-name: Analyze Pull Request with ToFood AI
+name: RAICO
 
 on:
   pull_request:
@@ -94,7 +94,7 @@ jobs:
 
     steps:
       - name: 🐈‍⬛ Run Pull Request Analysis
-        uses: ToFood/tofood-ai/.github/actions/analyze-pr@main
+        uses: ohntrebor/raico/.github/actions/analyze-pr@main
         with:
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}
           openai_model: gpt-3.5-turbo

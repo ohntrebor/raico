@@ -1,0 +1,1 @@
+Revise o código abaixo para identificar bugs, problemas de segurança e possíveis melhorias. Explique com clareza os pontos a serem melhorados.

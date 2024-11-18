@@ -1,0 +1,38 @@
+name: Review Pull Request
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Passo 1: Checkout do código
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Passo 2: Configurar Python
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      # Passo 3: Instalar dependências
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r scripts/requirements.txt
+
+      # Passo 4: Executar script de análise
+      - name: Analyze Pull Request
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }} # Token da OpenAI
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Token automático do GitHub
+          GITHUB_REPOSITORY: ${{ github.repository }} # Nome do repositório
+          PR_NUMBER: ${{ github.event.pull_request.number }} # Número do PR
+        run: |
+          source venv/bin/activate
+          python scripts/analyze_pr.py

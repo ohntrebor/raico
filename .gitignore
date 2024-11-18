@@ -1,0 +1,40 @@
+# Ambiente virtual 
+venv/
+ENV/
+.env/
+*.env
+
+# Dependências
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Arquivos de configuração pessoal
+.idea/
+.vscode/
+*.log
+
+# Configurações específicas do sistema operacional
+.DS_Store
+Thumbs.db
+
+# Arquivos gerados durante execução
+*.swp
+*.swo
+*.tmp
+*.bak
+*.log
+
+# Arquivos de testes e cobertura
+htmlcov/
+.coverage
+.tox/
+nosetests.xml
+*.egg-info/
+dist/
+build/
+
+# Arquivos criados por ferramentas de CI/CD
+pip-log.txt
+pip-delete-this-directory.txt
