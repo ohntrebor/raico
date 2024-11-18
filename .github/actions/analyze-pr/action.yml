@@ -1,4 +1,4 @@
-name: Analyze Pull Request
+name: RAICO Analyze
 description: "GitHub Action para analisar Pull Requests usando GPT."
 
 inputs:
