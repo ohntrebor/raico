@@ -97,7 +97,7 @@ jobs:
         uses: ohntrebor/raico/.github/actions/analyze-pr@main
         with:
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}
-          openai_model: gpt-3.5-turbo
+          openai_model: ${{ vars.OPENAI_API_MODEL }} # Default: ChatGPT 4
           github_token: ${{ secrets.GITHUB_TOKEN }}
           prompt_text: |
             Analise este Pull Request. Verifique:

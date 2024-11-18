@@ -1,38 +1,26 @@
-name: Review Pull Request
+name: RAICO Analyze
 
 on:
   pull_request:
     types: [opened, synchronize]
 
+permissions:
+  pull-requests: write
+  contents: write
+
 jobs:
-  review:
+  analyze:
     runs-on: ubuntu-latest
 
     steps:
-      # Passo 1: Checkout do código
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      # Passo 2: Configurar Python
-      - name: Setup Python
-        uses: actions/setup-python@v4
+      - name: 🐈‍⬛ Run Pull Request Analysis
+        uses: analyze-pr@main
         with:
-          python-version: 3.9
-
-      # Passo 3: Instalar dependências
-      - name: Install dependencies
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install -r scripts/requirements.txt
-
-      # Passo 4: Executar script de análise
-      - name: Analyze Pull Request
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }} # Token da OpenAI
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Token automático do GitHub
-          GITHUB_REPOSITORY: ${{ github.repository }} # Nome do repositório
-          PR_NUMBER: ${{ github.event.pull_request.number }} # Número do PR
-        run: |
-          source venv/bin/activate
-          python scripts/analyze_pr.py
+          openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+          openai_model: ${{ vars.OPENAI_API_MODEL }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          prompt_text: |
+            Analise este Pull Request. Verifique:
+            - Melhorias de código e aderência às boas práticas.
+            - Possíveis bugs ou inconsistências.
+            - Sugestões de melhorias.

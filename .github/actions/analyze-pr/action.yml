@@ -1,4 +1,4 @@
-name: RAICO Analyze
+name: RAICO Trigger
 description: "GitHub Action para analisar Pull Requests usando GPT."
 
 inputs:
