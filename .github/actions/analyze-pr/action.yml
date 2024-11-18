@@ -1,0 +1,62 @@
+name: RAICO Trigger
+description: "GitHub Action para analisar Pull Requests usando GPT."
+
+inputs:
+  openai_api_key:
+    description: "A chave de API da OpenAI para autenticação."
+    required: true
+  openai_model:
+    description: "O modelo GPT a ser usado (ex: gpt-4, gpt-3.5-turbo)."
+    required: true
+    default: "gpt-4"
+  prompt_text:
+    description: "Texto do prompt para personalizar a análise do PR."
+    required: true
+  github_token:
+    description: "Token do GitHub para autenticação."
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    # Passo 1: Checkout do código do repositório atual
+    - name: Checkout current repository
+      uses: actions/checkout@v3
+
+    # Passo 2: Clonar o repositório RAICO
+    - name: Clone RAICO repository
+      shell: bash
+      run: |
+        git clone https://github.com/ohntrebor/raico.git
+
+    # Passo 3: Configurar Python no repositório RAICO
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
+
+    # Passo 4: Instalar dependências no repositório RAICO
+    - name: Install dependencies
+      shell: bash
+      run: |
+        cd raico
+        python -m venv venv
+        source venv/bin/activate
+        pip install --upgrade pip
+        pip install -r scripts/requirements.txt
+
+    # Passo 5: Executar o script de análise do RAICO
+    - name: Run Pull Request Analysis
+      shell: bash
+      env:
+        OPENAI_API_KEY: ${{ inputs.openai_api_key }}
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+        OPENAI_MODEL: ${{ inputs.openai_model }}
+        PROMPT_PATH: scripts/prompts/default_prompt.txt
+      run: |
+        cd raico
+        echo "${{ inputs.prompt_text }}" > scripts/prompts/default_prompt.txt
+        source venv/bin/activate
+        python scripts/analyze_pr.py

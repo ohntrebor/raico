@@ -1,0 +1,26 @@
+name: RAICO Analyze
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🐈‍⬛ Run Pull Request Analysis
+        uses: analyze-pr@main
+        with:
+          openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+          openai_model: ${{ vars.OPENAI_API_MODEL }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          prompt_text: |
+            Analise este Pull Request. Verifique:
+            - Melhorias de código e aderência às boas práticas.
+            - Possíveis bugs ou inconsistências.
+            - Sugestões de melhorias.
