@@ -2,7 +2,7 @@ name: RAICO Trigger
 description: "GitHub Action para analisar Pull Requests usando GPT."
 
 inputs:
-  openai_api_key:
+  api_key:
     description: "A chave de API da OpenAI para autenticação."
     required: true
   openai_model:
@@ -53,7 +53,7 @@ runs:
     - name: Run Pull Request Analysis
       shell: bash
       env:
-        OPENAI_API_KEY: ${{ inputs.openai_api_key }}
+        API_KEY: ${{ inputs.api_key }}
         GITHUB_TOKEN: ${{ inputs.github_token }}
         GITHUB_REPOSITORY: ${{ github.repository }}
         PR_NUMBER: ${{ github.event.pull_request.number }}
