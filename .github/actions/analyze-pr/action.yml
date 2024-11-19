@@ -2,10 +2,10 @@ name: RAICO Trigger
 description: "GitHub Action para analisar Pull Requests usando GPT."
 
 inputs:
-  openai_api_key:
+  api_key:
     description: "A chave de API da OpenAI para autenticação."
     required: true
-  openai_model:
+  ai_model:
     description: "O modelo GPT a ser usado (ex: gpt-4, gpt-3.5-turbo)."
     required: true
     default: "gpt-4"
@@ -15,6 +15,10 @@ inputs:
   github_token:
     description: "Token do GitHub para autenticação."
     required: true
+  ai_provider:
+    description: "Provedor de IA a ser usado (ex: openai, outra_ia)."
+    required: true
+    default: "openai"
 
 runs:
   using: "composite"
@@ -49,14 +53,15 @@ runs:
     - name: Run Pull Request Analysis
       shell: bash
       env:
-        OPENAI_API_KEY: ${{ inputs.openai_api_key }}
+        API_KEY: ${{ inputs.api_key }}
         GITHUB_TOKEN: ${{ inputs.github_token }}
         GITHUB_REPOSITORY: ${{ github.repository }}
         PR_NUMBER: ${{ github.event.pull_request.number }}
-        OPENAI_MODEL: ${{ inputs.openai_model }}
+        AI_MODEL: ${{ inputs.ai_model }}
         PROMPT_PATH: scripts/prompts/default_prompt.txt
+        AI_PROVIDER: ${{ inputs.ai_provider }}
       run: |
         cd raico
         echo "${{ inputs.prompt_text }}" > scripts/prompts/default_prompt.txt
         source venv/bin/activate
-        python scripts/analyze_pr.py
+        python scripts/ai_dispatcher.py
