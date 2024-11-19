@@ -28,6 +28,7 @@ def review_pr(openai_api_key, github_token, repo_name, pr_number, prompt_path, o
             with open(prompt_path, 'r') as file:
                 return file.read()
         except FileNotFoundError:
+            # Lança um erro caso o arquivo de prompt não seja encontrado
             raise FileNotFoundError(f"Prompt file não encontrado em: {prompt_path}")
 
     def analyze_file(file_path, file_content, prompt):
@@ -42,6 +43,7 @@ def review_pr(openai_api_key, github_token, repo_name, pr_number, prompt_path, o
         Returns:
             str: Resposta do modelo OpenAI.
         """
+        # Cria o prompt completo com o conteúdo do arquivo e o prompt personalizado
         full_prompt = f"""
         {prompt}
         Caminho: {file_path}
@@ -51,35 +53,40 @@ def review_pr(openai_api_key, github_token, repo_name, pr_number, prompt_path, o
         ```
         """
         try:
+            # Chamada para a API OpenAI
             response = openai.ChatCompletion.create(
                 model=openai_model,
                 messages=[{"role": "user", "content": full_prompt}],
             )
+            # Retorna a mensagem gerada pela IA
             return response['choices'][0]['message']['content']
         except openai.error.OpenAIError as e:
+            # Retorna uma mensagem de erro específica para o arquivo
             return f"Erro ao processar o arquivo {file_path} com o modelo {openai_model}: {e}"
 
     try:
-
         # Carrega o prompt do arquivo especificado
         prompt = load_prompt()
 
-        # Conecta-se ao GitHub
+        # Conecta-se ao GitHub utilizando o token
         g = Github(github_token)
         repo = g.get_repo(repo_name)
         pr = repo.get_pull(int(pr_number))
 
+        # Lista para armazenar feedbacks e erros de análise
+        overall_feedback = []
+
         # Itera sobre todos os commits do PR
         commits = pr.get_commits()
         for commit in commits:
-            commit_id = commit.sha  # Obtém o SHA do commit atual
+            commit_id = commit.sha
             print(f"Analisando arquivos no commit: {commit_id}")
 
             # Itera sobre os arquivos alterados no commit
             for file in commit.files:
-                file_path = file.filename  # Nome do arquivo
+                file_path = file.filename
 
-                # Verifica se o arquivo contém alterações (patch)
+                # Ignora arquivos sem alterações no patch
                 if not file.patch:
                     print(f"Ignorando {file_path} (sem alterações no commit).")
                     continue
@@ -90,27 +97,22 @@ def review_pr(openai_api_key, github_token, repo_name, pr_number, prompt_path, o
                 # Analisa o arquivo com o modelo OpenAI
                 feedback = analyze_file(file_path, file_content, prompt)
 
-                # Tenta adicionar um comentário no PR
-                try:
-                    pr.create_review_comment(
-                        body=feedback,
-                        path=file_path,
-                        position=1,  # Comenta na primeira linha do diff
-                        commit_id=commit_id  # Relaciona o comentário ao commit atual
+                # Adiciona feedback ou mensagem de erro ao resumo consolidado
+                if "Erro ao processar o arquivo" in feedback:
+                    overall_feedback.append(
+                        f"**Erro ao analisar o arquivo `{file_path}`:**\n\n{feedback}\n\n---"
                     )
-                    print(f"Comentário adicionado no arquivo: {file_path}")
-                except Exception as e:
-                    print(f"Erro ao comentar no arquivo {file_path}: {e}")
+                else:
+                    overall_feedback.append(
+                        f"### Arquivo: `{file_path}`\n\n{feedback}\n\n---"
+                    )
 
-        print("Análise do PR concluída com sucesso!")
+        # Gera o comentário consolidado com todos os feedbacks
+        summary = f"**Análise Automática do PR pela RAICO:**\n\n{'\n\n'.join(overall_feedback)}"
+        pr.create_issue_comment(summary)
+        print("Comentário do resumo do PR criado com sucesso!")
 
     except Exception as e:
-        # Lida com erros gerais durante a análise
+        # Lida com erros gerais durante o processo de análise
         print(f"Erro ao revisar o PR: {e}")
-        try:
-            # Cria um comentário no PR relatando o erro
-            repo.get_pull(int(pr_number)).create_issue_comment(
-                f"**Erro na análise automatizada pela RAICO:**\n\n{str(e)}"
-            )
-        except Exception as comment_error:
-            print(f"Falha ao postar o erro no PR: {comment_error}")
+        post_error_comment(github_token, repo_name, pr_number, str(e))
