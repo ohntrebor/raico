@@ -18,7 +18,7 @@ def ai_dispatcher():
     # Definir um "switch" para provedores diferentes
     def openai_method():
         return openai_review(
-            api_key=api_key,
+            openai_api_key=api_key,
             github_token=github_token,
             repo_name=repo_name,
             pr_number=pr_number,
