@@ -64,4 +64,6 @@ runs:
         cd raico
         echo "${{ inputs.prompt_text }}" > scripts/prompts/default_prompt.txt
         source venv/bin/activate
+        export PYTHONPATH=$PYTHONPATH:$(pwd)
         python scripts/ai_dispatcher.py
+
