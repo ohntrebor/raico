@@ -15,6 +15,10 @@ inputs:
   github_token:
     description: "Token do GitHub para autenticação."
     required: true
+  ai_provider:
+    description: "Provedor de IA a ser usado (ex: openai, outra_ia)."
+    required: true
+    default: "openai"
 
 runs:
   using: "composite"
@@ -55,8 +59,9 @@ runs:
         PR_NUMBER: ${{ github.event.pull_request.number }}
         OPENAI_MODEL: ${{ inputs.openai_model }}
         PROMPT_PATH: scripts/prompts/default_prompt.txt
+        AI_PROVIDER: ${{ inputs.ai_provider }}
       run: |
         cd raico
         echo "${{ inputs.prompt_text }}" > scripts/prompts/default_prompt.txt
         source venv/bin/activate
-        python scripts/analyze_pr.py
+        python scripts/ai_dispatcher.py
