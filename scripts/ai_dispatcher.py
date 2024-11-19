@@ -7,13 +7,13 @@ def ai_dispatcher():
     Dispatcher para decidir qual lógica de análise usar com base no ai_provider.
     """
     # Carregar variáveis do ambiente
-    ai_provider = os.getenv("AI_PROVIDER")
+    ai_provider = os.getenv("AI_PROVIDER", "openai")
     api_key = os.getenv("API_KEY")
     github_token = os.getenv("GITHUB_TOKEN")
     repo_name = os.getenv("GITHUB_REPOSITORY")
     pr_number = os.getenv("PR_NUMBER")
     prompt_path = os.getenv("PROMPT_PATH", "scripts/prompts/default_prompt.txt")
-    openai_model = os.getenv("OPENAI_MODEL", "gpt-4")
+    ai_model = os.getenv("AI_MODEL", "gpt-4")
 
     # Definir um "switch" para provedores diferentes
     def openai_method():
@@ -23,7 +23,7 @@ def ai_dispatcher():
             repo_name=repo_name,
             pr_number=pr_number,
             prompt_path=prompt_path,
-            openai_model=openai_model
+            openai_model=ai_model
         )
 
     # Aqui podemos adicionar mais provedores no futuro

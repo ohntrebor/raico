@@ -57,7 +57,7 @@ runs:
         GITHUB_TOKEN: ${{ inputs.github_token }}
         GITHUB_REPOSITORY: ${{ github.repository }}
         PR_NUMBER: ${{ github.event.pull_request.number }}
-        OPENAI_MODEL: ${{ inputs.openai_model }}
+        AI_MODEL: ${{ inputs.ai_model }}
         PROMPT_PATH: scripts/prompts/default_prompt.txt
         AI_PROVIDER: ${{ inputs.ai_provider }}
       run: |
