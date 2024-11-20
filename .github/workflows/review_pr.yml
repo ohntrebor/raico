@@ -11,6 +11,7 @@ permissions:
 env:
   AI_PROVIDER: "gemini"
   AI_MODEL: "gemini-1.5-flash-latest"
+  AI_VERSION: "v1beta"
   PROMPT: "Com base nas alterações realizadas no meu PR, gostaria de obter recomendações específicas sobre boas práticas de segurança e estilo de código, considerando que este projeto é um [descrição do projeto]. Por favor, analise as do meu PR e forneça sugestões práticas e contextualizadas para melhorar a qualidade do código, garantindo alinhamento com padrões de segurança e consistência com as melhores práticas do mercado."
 
 jobs:
@@ -26,4 +27,5 @@ jobs:
           api_key: ${{ secrets.GEMINI_API_KEY }} # Cadastrar a API_KEY no secrests do seu repositório
           ai_model: ${{ env.AI_MODEL }} # No exemplo foi definida no pipe, mas pode cadastrar no seu repositório se preferir
           github_token: ${{ secrets.GITHUB_TOKEN }} # O Github gere automático em pipelines, não precisa gerar
+          ai_version: ${{ env.AI_VERSION }} # (opcional) dependendo da AI será solicitado uma versão
          # prompt: ${{ env.PROMPT }} # (opcional) Caso não defina um prompt aqui, será considerado o prompt default do repositório RAICO

@@ -2,20 +2,20 @@ import openai
 import requests
 from github import Github
 
-def review_pr_openai(openai_api_key, github_token, repo_name, pr_number, prompt_path, openai_model):
+def review_pr_openai(ai_api_key, github_token, repo_name, pr_number, prompt_path, ai_model):
     """
     Função principal para analisar Pull Requests usando OpenAI.
 
     Args:
-        openai_api_key (str): Chave de autenticação da API OpenAI.
+        ai_api_key (str): Chave de autenticação da API OpenAI.
         github_token (str): Token de autenticação do GitHub.
         repo_name (str): Nome do repositório no formato "owner/repo".
         pr_number (int): Número do Pull Request.
         prompt_path (str): Caminho para o arquivo de prompt personalizado.
-        openai_model (str): Modelo OpenAI a ser usado (ex: gpt-4).
+        ai_model (str): Modelo OpenAI a ser usado (ex: gpt-4).
     """
     # Configuração da chave da API OpenAI
-    openai.api_key = openai_api_key
+    openai.api_key = ai_api_key
 
     def load_prompt():
         """
@@ -55,14 +55,14 @@ def review_pr_openai(openai_api_key, github_token, repo_name, pr_number, prompt_
         try:
             # Chamada para a API OpenAI
             response = openai.ChatCompletion.create(
-                model=openai_model,
+                model=ai_model,
                 messages=[{"role": "user", "content": full_prompt}],
             )
             # Retorna a mensagem gerada pela IA
             return response['choices'][0]['message']['content']
         except openai.error.OpenAIError as e:
             # Retorna uma mensagem de erro específica para o arquivo
-            return f"Erro ao processar o arquivo {file_path} com o modelo {openai_model}: {e}"
+            return f"Erro ao processar o arquivo {file_path} com o modelo {ai_model}: {e}"
 
     try:
         # Carrega o prompt do arquivo especificado

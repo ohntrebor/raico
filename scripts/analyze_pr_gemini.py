@@ -1,16 +1,18 @@
 import requests
 from github import Github
 
-def review_pr_gemini(api_key, github_token, repo_name, pr_number, prompt_path, openai_model):
+def review_pr_gemini(ai_api_key, github_token, repo_name, pr_number, prompt_path, ai_model, ai_version):
     """
     Função para analisar Pull Requests usando o Gemini.
 
     Args:
-        api_key (str): Chave de autenticação da API Gemini.
+        ai_api_key (str): Chave de autenticação da API Gemini.
         github_token (str): Token de autenticação do GitHub.
         repo_name (str): Nome do repositório no formato "owner/repo".
         pr_number (int): Número do Pull Request.
         prompt_path (str): Caminho para o arquivo de prompt personalizado.
+        ai_model (str): Modelo da AI.
+        ai_version (str): Versão da API.
     """
     # Carregar o prompt do arquivo
     def load_prompt():
@@ -22,7 +24,7 @@ def review_pr_gemini(api_key, github_token, repo_name, pr_number, prompt_path, o
 
     # Fazer a análise de um arquivo com o Gemini
     def analyze_file_with_gemini(file_path, file_content, prompt):
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{openai_model}:generateContent?key={api_key}"
+        url = f"https://generativelanguage.googleapis.com/{ai_version}/models/{ai_model}:generateContent?key={ai_api_key}"
         headers = {"Content-Type": "application/json"}
         payload = {
             "contents": [

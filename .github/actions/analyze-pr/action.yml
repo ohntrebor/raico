@@ -2,23 +2,34 @@ name: RAICO Trigger
 description: "GitHub Action para analisar Pull Requests usando GPT."
 
 inputs:
-  api_key:
-    description: "A chave de API da OpenAI para autenticação."
-    required: true
-  ai_model:
-    description: "O modelo GPT a ser usado (ex: gpt-4, gpt-3.5-turbo)."
-    required: true
-    default: "gpt-4"
-  prompt:
-    description: "Texto do prompt para personalizar a análise do PR."
-    required: false
-  github_token:
-    description: "Token do GitHub para autenticação."
-    required: true
+
   ai_provider:
     description: "Provedor de IA a ser usado (ex: openai, outra_ia)."
     required: true
-    default: "openai"
+    default: "gemini"
+
+  ai_api_key:
+    description: "A chave de API da AI para autenticação."
+    required: true
+
+  ai_model:
+    description: "O modelo GPT a ser usado (ex: gpt-4, gpt-3.5-turbo)."
+    required: true
+    default: "gemini-1.5-flash-latest"
+
+  ai_version:
+    description: "Versão da API."
+    required: false
+    default: "v1beta"
+
+  prompt:
+    description: "Texto do prompt para personalizar a análise do PR."
+    required: false
+
+  github_token:
+    description: "Token do GitHub para autenticação."
+    required: true
+
 
 runs:
   using: "composite"
@@ -53,13 +64,14 @@ runs:
     - name: Run Pull Request Analysis
       shell: bash
       env:
-        API_KEY: ${{ inputs.api_key }}
-        GITHUB_TOKEN: ${{ inputs.github_token }}
-        GITHUB_REPOSITORY: ${{ github.repository }}
-        PR_NUMBER: ${{ github.event.pull_request.number }}
-        AI_MODEL: ${{ inputs.ai_model }}
-        PROMPT_PATH: scripts/prompts/default_prompt.txt
         AI_PROVIDER: ${{ inputs.ai_provider }}
+        AI_API_KEY: ${{ inputs.ai_api_key }}
+        AI_MODEL: ${{ inputs.ai_model }}
+        AI_VERSION: ${{ inputs.ai_version }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+        PROMPT_PATH: scripts/prompts/default_prompt.txt
       run: |
         cd raico
         if [ -n "${{ inputs.prompt }}" ]; then

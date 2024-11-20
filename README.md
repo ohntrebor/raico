@@ -51,6 +51,7 @@ permissions:
 env:
   AI_PROVIDER: "gemini"
   AI_MODEL: "gemini-1.5-flash-latest"
+  AI_VERSION: "v1beta"
   PROMPT: "Com base nas alterações realizadas no meu PR, gostaria de obter recomendações específicas sobre boas práticas de segurança e estilo de código, considerando que este projeto é um [descrição do projeto]. Por favor, analise as do meu PR e forneça sugestões práticas e contextualizadas para melhorar a qualidade do código, garantindo alinhamento com padrões de segurança e consistência com as melhores práticas do mercado."
 
 jobs:
@@ -66,7 +67,8 @@ jobs:
           api_key: ${{ secrets.GEMINI_API_KEY }} # Cadastrar a API_KEY no secrests do seu repositório
           ai_model: ${{ env.AI_MODEL }} # No exemplo foi definida no pipe, mas pode cadastrar no seu repositório se preferir
           github_token: ${{ secrets.GITHUB_TOKEN }} # O Github gere automático em pipelines, não precisa gerar
-         # (opcional) prompt: ${{ env.PROMPT }} #  Caso não defina um prompt aqui, será considerado o prompt default do repositório RAICO
+          ai_version: ${{ env.AI_VERSION }} # (opcional) dependendo da AI será solicitado uma versão
+         # prompt: ${{ env.PROMPT }} # (opcional) Caso não defina um prompt aqui, será considerado o prompt default do repositório RAICO
 
 ```
 
@@ -93,11 +95,14 @@ jobs:
 Certifique-se de configurar o arquivo `.env` com as seguintes variáveis no ambiente onde o script será executado, caso deseje clonar o repo e testar local:
 
 ```plaintext
-ai_provider: openai // Qual AI você está utilizando
-api_key: xxxxxxxxxxxxxxxxxxxxxx // Sua API-KEY de Integração com a AI
-ai_model: gpt-3.5-turbo # Modelo da sua AI
-github_token: ${{ secrets.GITHUB_TOKEN }} # Seu token do Github (é gerado automáticamente)
-prompt: "........." # Comando para definir que tipo de análise você quer que a AI faça em relação as alterações do seu PR
+  AI_PROVIDER: "gemini"
+  AI_API_KEY: "xxxxxxxxxxxxxxxxxxxxxx"
+  AI_MODEL: "gemini-1.5-flash-latest"
+  AI_VERSION: "v1beta"
+  GITHUB_REPOSITORY: "github.com/seu-github/seu-repo"
+  GITHUB_TOKEN: "seu github token"
+  PR_NUMBER: "7" // Número do PR que você quer revisar (do seu repo)
+  PROMPT_PATH: "scripts/prompts/default_prompt.txt" // mantenha esse path, e altere o prompt a partir desse arquivo
 ```
 
 ## 📖 Passo a Passo para Instalar e Rodar o Projeto
