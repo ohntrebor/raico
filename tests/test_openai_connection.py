@@ -7,6 +7,7 @@ load_dotenv()
 
 # Obtém o token da API OpenAI do arquivo .env
 openai_api_key = os.getenv("AI_API_KEY")
+ai_model = os.getenv("AI_MODEL")
 
 # Verifica se o token foi carregado corretamente
 if not openai_api_key:
@@ -19,7 +20,7 @@ openai.api_key = openai_api_key
 def test_openai_connection():
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4",
+            model=ai_model,
             messages=[
                 {"role": "system", "content": "Você é um assistente útil."},
                 {"role": "user", "content": "Teste de conexão. Está funcionando?"}

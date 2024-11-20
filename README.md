@@ -105,7 +105,7 @@ Certifique-se de configurar o arquivo `.env` com as seguintes variáveis no ambi
   PROMPT_PATH: "scripts/prompts/default_prompt.txt" // mantenha esse path, e altere o prompt a partir desse arquivo
 ```
 
-## 📖 Passo a Passo para Instalar e Rodar o Projeto
+## 📖 Configuração Dinâmica do Projeto
 
 ### **1. Clone o Repositório**
 
@@ -114,20 +114,19 @@ git clone https://github.com/ohntrebor/raico.git
 cd raico
 ```
 
-### **2. Configure o Ambiente Virtual**
+### **2. Torne o arquivo de configuração executável na raiz do projeto**
 
 ```bash
-python -m venv venv
-source venv/bin/activate  # No Windows: venv\Scripts\activate
+chmod +x setup_raico.sh
 ```
 
-### **3. Instale as Dependências**
+### **3. Execute o comando para configuração dinâmica do projeto na raiz do projeto**
 
 ```bash
-pip install -r scripts/requirements.txt
+./setup_raico.sh
 ```
 
-### **4. Testar**
+### **Caso queira testar após configurar o projeto e atualizar o .env:**
 
 ```bash
 pytest -m gemini # exemplo, rodando Gemini
