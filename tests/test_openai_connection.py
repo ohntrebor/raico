@@ -6,11 +6,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Obtém o token da API OpenAI do arquivo .env
-openai_api_key = os.getenv("OPENAI_API_KEY")
+openai_api_key = os.getenv("AI_API_KEY")
 
 # Verifica se o token foi carregado corretamente
 if not openai_api_key:
-    raise EnvironmentError("OPENAI_API_KEY não encontrado. Verifique seu arquivo .env.")
+    raise EnvironmentError("AI_API_KEY não encontrado. Verifique seu arquivo .env.")
 
 # Configura o token para a biblioteca OpenAI
 openai.api_key = openai_api_key

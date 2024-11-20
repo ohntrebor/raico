@@ -21,7 +21,7 @@ jobs:
     steps:
 
       - name: 🤖 Run Pull Request Review
-        uses: ohntrebor/raico/.github/actions/review-pr@main
+        uses: review-pr@main
         with:
           ai_provider: ${{ env.AI_PROVIDER }} # No exemplo foi definida no pipe, mas pode cadastrar no seu repositório se preferir
           ai_api_key: ${{ secrets.GEMINI_API_KEY }} # Cadastrar a API_KEY no secrests do seu repositório
