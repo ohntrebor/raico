@@ -38,7 +38,7 @@ Este repositório foi projetado para ser **reutilizável** por qualquer outro re
 ➡️ Para revisar seu PR com IA, basta APENAS copiar e colar código yml abaixo no seu arquivo yml (do seu repositório 😁) -> .github\workflows\meu-pipeline.yml
 
 ```yaml
-name: RAICO Review
+name: Review Pull Request
 
 on:
   pull_request:
@@ -55,13 +55,13 @@ env:
   PROMPT: "Com base nas alterações realizadas no meu PR, gostaria de obter recomendações específicas sobre boas práticas de segurança e estilo de código, considerando que este projeto é um [descrição do projeto]. Por favor, analise as do meu PR e forneça sugestões práticas e contextualizadas para melhorar a qualidade do código, garantindo alinhamento com padrões de segurança e consistência com as melhores práticas do mercado."
 
 jobs:
-  analyze:
+  raico-review-pr:
     runs-on: ubuntu-latest
 
     steps:
 
       - name: 🤖 Run Pull Request Review
-        uses: ohntrebor/raico/.github/actions/analyze-pr@main
+        uses: ohntrebor/raico/.github/actions/review-pr@main
         with:
           ai_provider: ${{ env.AI_PROVIDER }} # No exemplo foi definida no pipe, mas pode cadastrar no seu repositório se preferir
           ai_api_key: ${{ secrets.GEMINI_API_KEY }} # Cadastrar a API_KEY no secrests do seu repositório
