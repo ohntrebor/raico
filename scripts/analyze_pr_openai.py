@@ -75,37 +75,40 @@ def review_pr(openai_api_key, github_token, repo_name, pr_number, prompt_path, o
 
         # Lista para armazenar feedbacks e erros de análise
         overall_feedback = []
+        analyzed_files = set()  # Mantém controle dos arquivos já analisados
 
-        # Itera sobre todos os commits do PR
-        commits = pr.get_commits()
-        for commit in commits:
-            commit_id = commit.sha
-            print(f"Analisando arquivos no commit: {commit_id}")
+        # Itera sobre todos os arquivos do PR (independentemente dos commits)
+        for file in pr.get_files():
+            file_path = file.filename
 
-            # Itera sobre os arquivos alterados no commit
-            for file in commit.files:
-                file_path = file.filename
+            # Ignora arquivos sem alterações no patch
+            if not file.patch:
+                print(f"Ignorando {file_path} (sem alterações no PR).")
+                continue
 
-                # Ignora arquivos sem alterações no patch
-                if not file.patch:
-                    print(f"Ignorando {file_path} (sem alterações no commit).")
-                    continue
+            # Verifica se o arquivo já foi analisado
+            if file_path in analyzed_files:
+                print(f"Ignorando {file_path} (já analisado).")
+                continue
 
-                # Faz o download do conteúdo do arquivo
-                file_content = requests.get(file.raw_url).text
+            # Marca o arquivo como analisado
+            analyzed_files.add(file_path)
 
-                # Analisa o arquivo com o modelo OpenAI
-                feedback = analyze_file(file_path, file_content, prompt)
+            # Faz o download do conteúdo do arquivo
+            file_content = requests.get(file.raw_url).text
 
-                # Adiciona feedback ou mensagem de erro ao resumo consolidado
-                if "Erro ao processar o arquivo" in feedback:
-                    overall_feedback.append(
-                        f"**Erro ao analisar o arquivo `{file_path}`:**\n\n{feedback}\n\n---"
-                    )
-                else:
-                    overall_feedback.append(
-                        f"### Arquivo: `{file_path}`\n\n{feedback}\n\n---"
-                    )
+            # Analisa o arquivo com o modelo OpenAI
+            feedback = analyze_file(file_path, file_content, prompt)
+
+            # Adiciona feedback ou mensagem de erro ao resumo consolidado
+            if "Erro ao processar o arquivo" in feedback:
+                overall_feedback.append(
+                    f"**Erro ao analisar o arquivo `{file_path}`:**\n\n{feedback}\n\n---"
+                )
+            else:
+                overall_feedback.append(
+                    f"### Arquivo: `{file_path}`\n\n{feedback}\n\n---"
+                )
 
         # Gera o comentário consolidado com todos os feedbacks
         summary = (
