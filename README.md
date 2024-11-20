@@ -35,7 +35,7 @@ Este repositório foi projetado para ser **reutilizável** por qualquer outro re
 ---
 
 ## **🤖 Como Usar**
-➡️ Para revisar seu PR com IA, basta APENAS copiar e colar código yml abaixo no seu arquivo yml (do seu repositório 😁) -> .github\workflows\meu-pipeline.yml
+➡️ Para revisar seu PR com IA, copie e cole o código YAML abaixo no arquivo .github/workflows/meu-pipeline.yml do seu repositório 😁:
 
 ```yaml
 name: Review Pull Request
