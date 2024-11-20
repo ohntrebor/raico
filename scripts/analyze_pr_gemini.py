@@ -85,11 +85,11 @@ def review_pr_gemini(api_key, github_token, repo_name, pr_number, prompt_path, o
 
         # Gera e posta o feedback consolidado
         summary = (
-            f"**Análise Automática do PR pela RAICO 🤖:**\n\n" + "\n\n".join(overall_feedback)
+            f"**Análise Automática do PR pelo RAICO 🤖:**\n\n" + "\n\n".join(overall_feedback)
         )
         pr.create_issue_comment(summary)
         print("Comentário do resumo do PR criado com sucesso!")
     except Exception as e:
         print(f"Erro ao revisar o PR com Gemini: {e}")
         # Postar comentário de erro no PR
-        pr.create_issue_comment(f"**Erro na análise automatizada pela RAICO 🤖:**\n\n{str(e)}")
+        pr.create_issue_comment(f"**Erro na análise automatizada pelo RAICO 🤖:**\n\n{str(e)}")
