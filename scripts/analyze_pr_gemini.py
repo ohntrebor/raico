@@ -22,7 +22,7 @@ def review_pr_gemini(api_key, github_token, repo_name, pr_number, prompt_path, o
 
     # Fazer a análise de um arquivo com o Gemini
     def analyze_file_with_gemini(file_path, file_content, prompt):
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/${openai_model}:generateContent?key={api_key}"
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{openai_model}:generateContent?key={api_key}"
         headers = {"Content-Type": "application/json"}
         payload = {
             "contents": [
