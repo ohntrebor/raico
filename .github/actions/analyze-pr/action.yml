@@ -9,9 +9,9 @@ inputs:
     description: "O modelo GPT a ser usado (ex: gpt-4, gpt-3.5-turbo)."
     required: true
     default: "gpt-4"
-  prompt_text:
+  prompt:
     description: "Texto do prompt para personalizar a análise do PR."
-    required: true
+    required: false
   github_token:
     description: "Token do GitHub para autenticação."
     required: true
@@ -62,7 +62,9 @@ runs:
         AI_PROVIDER: ${{ inputs.ai_provider }}
       run: |
         cd raico
-        echo "${{ inputs.prompt_text }}" > scripts/prompts/default_prompt.txt
+        if [ -n "${{ inputs.prompt }}" ]; then
+          echo "${{ inputs.prompt }}" > scripts/prompts/default_prompt.txt
+        fi        
         source venv/bin/activate
         export PYTHONPATH=$PYTHONPATH:$(pwd)
         python scripts/ai_dispatcher.py

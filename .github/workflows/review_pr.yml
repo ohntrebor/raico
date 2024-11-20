@@ -19,7 +19,7 @@ jobs:
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}
           openai_model: ${{ vars.OPENAI_API_MODEL }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          prompt_text: |
+          prompt: |
             Analise este Pull Request. Verifique:
             - Melhorias de código e aderência às boas práticas.
             - Possíveis bugs ou inconsistências.

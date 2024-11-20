@@ -51,7 +51,7 @@ permissions:
 env:
   AI_PROVIDER: "gemini"
   AI_MODEL: "gemini-1.5-flash-latest"
-  PROMPT_TEXT: "Com base nas alterações realizadas no meu PR, gostaria de obter recomendações específicas sobre boas práticas de segurança e estilo de código, considerando que este projeto é um [descrição do projeto]. Por favor, analise as do meu PR e forneça sugestões práticas e contextualizadas para melhorar a qualidade do código, garantindo alinhamento com padrões de segurança e consistência com as melhores práticas do mercado."
+  PROMPT: "Com base nas alterações realizadas no meu PR, gostaria de obter recomendações específicas sobre boas práticas de segurança e estilo de código, considerando que este projeto é um [descrição do projeto]. Por favor, analise as do meu PR e forneça sugestões práticas e contextualizadas para melhorar a qualidade do código, garantindo alinhamento com padrões de segurança e consistência com as melhores práticas do mercado."
 
 jobs:
   analyze:
@@ -66,7 +66,7 @@ jobs:
           api_key: ${{ secrets.GEMINI_API_KEY }} # Cadastrar a API_KEY no secrests do seu repositório
           ai_model: ${{ env.AI_MODEL }} # No exemplo foi definida no pipe, mas pode cadastrar no seu repositório se preferir
           github_token: ${{ secrets.GITHUB_TOKEN }} # O Github gere automático em pipelines, não precisa gerar
-          prompt_text: ${{ env.PROMPT_TEXT }} # No exemplo foi definida no pipe, mas pode cadastrar no seu repositório se preferir
+          prompt: ${{ env.PROMPT }} # No exemplo foi definida no pipe, mas pode cadastrar no seu repositório se preferir
 
 ```
 
@@ -97,7 +97,7 @@ ai_provider: openai // Qual AI você está utilizando
 api_key: xxxxxxxxxxxxxxxxxxxxxx // Sua API-KEY de Integração com a AI
 ai_model: gpt-3.5-turbo # Modelo da sua AI
 github_token: ${{ secrets.GITHUB_TOKEN }} # Seu token do Github (é gerado automáticamente)
-prompt_text: "........." # Comando para definir que tipo de análise você quer que a AI faça em relação as alterações do seu PR
+prompt: "........." # Comando para definir que tipo de análise você quer que a AI faça em relação as alterações do seu PR
 ```
 
 ## 📖 Passo a Passo para Instalar e Rodar o Projeto
