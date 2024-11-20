@@ -1,6 +1,6 @@
 import os
-from scripts.analyze_pr_openai import review_pr as openai_review
-# Importe aqui outros métodos para provedores diferentes, se necessário.
+from scripts.analyze_pr_openai import review_pr_openai
+from scripts.analyze_pr_gemini import review_pr_gemini  # Importa o método para o Gemini
 
 def ai_dispatcher():
     """
@@ -13,11 +13,11 @@ def ai_dispatcher():
     repo_name = os.getenv("GITHUB_REPOSITORY")
     pr_number = os.getenv("PR_NUMBER")
     prompt_path = os.getenv("PROMPT_PATH", "scripts/prompts/default_prompt.txt")
-    ai_model = os.getenv("AI_MODEL", "gpt-4")
+    ai_model = os.getenv("AI_MODEL", "gpt-3.5-turbo")
 
-    # Definir um "switch" para provedores diferentes
+    # Provider OpenAI
     def openai_method():
-        return openai_review(
+        return review_pr_openai(
             openai_api_key=api_key,
             github_token=github_token,
             repo_name=repo_name,
@@ -26,11 +26,21 @@ def ai_dispatcher():
             openai_model=ai_model
         )
 
-    # Aqui podemos adicionar mais provedores no futuro
+    # Provider Gemini
+    def gemini_method():
+        return review_pr_gemini(
+            api_key=api_key,
+            github_token=github_token,
+            repo_name=repo_name,
+            pr_number=pr_number,
+            prompt_path=prompt_path,
+            openai_model=ai_model
+        )
+
+    # Adicionar mais provedores conforme necessário
     provider_methods = {
         "openai": openai_method,
-        # "gemini": gemini_method,  # Exemplo de outro provedor
-        # "other_ai": other_ai_method,  # Adicione aqui outros métodos
+        "gemini": gemini_method,
     }
 
     # Executar o método correspondente ao ai_provider

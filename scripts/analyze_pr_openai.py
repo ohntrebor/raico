@@ -2,7 +2,7 @@ import openai
 import requests
 from github import Github
 
-def review_pr(openai_api_key, github_token, repo_name, pr_number, prompt_path, openai_model):
+def review_pr_openai(openai_api_key, github_token, repo_name, pr_number, prompt_path, openai_model):
     """
     Função principal para analisar Pull Requests usando OpenAI.
 
