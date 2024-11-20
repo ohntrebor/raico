@@ -12,6 +12,7 @@ def review_pr_gemini(api_key, github_token, repo_name, pr_number, prompt_path, o
         pr_number (int): Número do Pull Request.
         prompt_path (str): Caminho para o arquivo de prompt personalizado.
     """
+    
     # Carregar o prompt do arquivo
     def load_prompt():
         try:
@@ -46,7 +47,6 @@ def review_pr_gemini(api_key, github_token, repo_name, pr_number, prompt_path, o
                 .get("parts", [{}])[0]
                 .get("text", "Nenhuma análise fornecida.")
             )
-
             return generated_text.strip()
         except requests.RequestException as e:
             return f"Erro ao processar o arquivo {file_path} com o Gemini: {e}"
@@ -54,16 +54,21 @@ def review_pr_gemini(api_key, github_token, repo_name, pr_number, prompt_path, o
     try:
         # Carrega o prompt
         prompt = load_prompt()
-
-        # Conecta-se ao GitHub
+        
+        
+       # Conecta-se ao GitHub
         g = Github(github_token)
         repo = g.get_repo(repo_name)
         pr = repo.get_pull(int(pr_number))
-
         # Lista para armazenar feedback consolidado
         overall_feedback = []
 
         # Itera sobre os arquivos no PR
+
+
+        # Flag para determinar se o pipeline deve falhar
+        critical_issue_found = False
+
         for file in pr.get_files():
             file_path = file.filename
 
@@ -83,13 +88,35 @@ def review_pr_gemini(api_key, github_token, repo_name, pr_number, prompt_path, o
                     f"### Arquivo: `{file_path}`\n\n{feedback}\n\n---"
                 )
 
+                # Verificar se o feedback contém problemas críticos
+                if any(keyword in feedback.lower() for keyword in ["vulnerabilidade", "bug crítico", "falha de segurança"]):
+                    critical_issue_found = True
+
         # Gera e posta o feedback consolidado
         summary = (
             f"**Análise Automática do PR pelo RAICO 🤖:**\n\n" + "\n\n".join(overall_feedback)
         )
         pr.create_issue_comment(summary)
         print("Comentário do resumo do PR criado com sucesso!")
+
+        # Reprovar o pipeline se problemas críticos forem encontrados
+        if critical_issue_found:
+            print("Problemas críticos encontrados. Reprovando o pipeline...")
+            repo.get_commit(pr.head.sha).create_status(
+                state="failure",
+                description="Problemas críticos encontrados durante a análise.",
+                context="RAICO PR Analysis"
+            )
+        else:
+            print("Nenhum problema crítico encontrado. Aprovando o pipeline...")
+            repo.get_commit(pr.head.sha).create_status(
+                state="success",
+                description="Análise concluída sem problemas críticos.",
+                context="RAICO PR Analysis"
+            )
+
     except Exception as e:
         print(f"Erro ao revisar o PR com Gemini: {e}")
+        
         # Postar comentário de erro no PR
         pr.create_issue_comment(f"**Erro na análise automatizada pelo RAICO 🤖:**\n\n{str(e)}")
