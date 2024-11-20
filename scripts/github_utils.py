@@ -31,7 +31,7 @@ def post_error_comment(github_token, repo_name, pr_number, error_message):
         pr = repo.get_pull(int(pr_number))
 
         pr.create_issue_comment(
-            f"**Erro na análise automatizada pela RAICO:**\n\n{str(error_message)}"
+            f"**Erro na análise automatizada pelo RAICO 🤖:**\n\n{str(error_message)}"
         )
         print(f"Comentário de erro adicionado no PR #{pr_number}")
     except Exception as e:
