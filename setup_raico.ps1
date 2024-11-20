@@ -70,6 +70,7 @@ Write-Host "📦 Instalando dependências do projeto..."
 pip install -r scripts/requirements.txt
 pip install pytest
 pip install python-dotenv
+pip install --upgrade PyGithub
 if ($LASTEXITCODE -ne 0) {
     Write-Host "❌ Falha ao instalar dependências."
     exit 1

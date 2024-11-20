@@ -62,6 +62,7 @@ echo "Instalando as dependências do projeto..."
 pip install -r scripts/requirements.txt || { echo "Falha ao instalar dependências"; exit 1; }
 pip install pytest
 pip install python-dotenv
+pip install --upgrade PyGithub
 
 # 6. Configurar o arquivo .env
 echo "Verificando o arquivo .env..."
