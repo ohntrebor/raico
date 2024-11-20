@@ -1,4 +1,4 @@
-# 🐈‍⬛ RAICO (Review with Artificial Intelligence for Code Orchestration)
+## 🦾 RAICO (Review with Artificial Intelligence for Code Orchestration)
 
 ## **Repositório Exclusivo de Integração com IA para assitência em fluxos de trabalho, em especial o GitubAction**
 
@@ -20,22 +20,22 @@ Este repositório foi projetado para ser **reutilizável** por qualquer outro re
 2. **Reutilização**:
    - A lógica de revisão está configurada como uma **GitHub Action Reutilizável**.
 3. **Análise Inteligente**:
-   - Utilizar modelos como o **`gpt-4`** ou **`gpt-3.5-turbo`** para analisar Pull Requests, detectar possíveis problemas e sugerir melhorias.
+   - Utilizar modelos como por exemplo o **`gpt-3.5-turbo`** da OPENAI para analisar Pull Requests, detectar possíveis problemas e sugerir melhorias.
 
 ---
 
-## **🚀 Como Funciona**
+## **ℹ️ Como Funciona**
 
 1. Repositórios externos referenciam este repositório como uma **GitHub Action**.
 2. Durante a execução do pipeline:
    - Captura as alterações do Pull Request.
    - Processa as alterações usando a AI de preferência.
-   - Adiciona comentários automáticos no Pull Request com feedback detalhado.
+   - Adiciona comentários automáticos no Pull Request com feedback detalhado Ccom base no prompt passado.
 
 ---
 
-
-## Para revisar seu PR com IA, basta APENAS colar código yml abaixo -> .github\workflows\meu-pipeline.yml
+## **🤖 Como Usar**
+➡️ Para revisar seu PR com IA, basta APENAS copiar e colar código yml abaixo no seu arquivo yml (do seu repositório 😁) -> .github\workflows\meu-pipeline.yml
 
 ```yaml
 name: RAICO Review
@@ -75,13 +75,15 @@ jobs:
 ![alt text](print_ex_pr.png)
 
 
+<br><br>
+
+<hr>
 
 
 
 
 
-
-## Caso queira clonar o repositório em sua máquina e rodar localmente, siga o passa a passo logo abaixo:
+## 🖥️ Caso queira clonar o repositório em sua máquina e rodar localmente, siga o passa a passo logo abaixo:
 
 
 
@@ -118,11 +120,5 @@ source venv/bin/activate  # No Windows: venv\Scripts\activate
 
 ```bash
 pip install -r scripts/requirements.txt
-```
-
-### **4. Execute o script para simular a validação**
-
-```bash
-Execute o Script de Teste
 ```
 
