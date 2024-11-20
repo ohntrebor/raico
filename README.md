@@ -114,16 +114,26 @@ git clone https://github.com/ohntrebor/raico.git
 cd raico
 ```
 
-### **2. Torne o arquivo de configuração executável na raiz do projeto**
+### **2. Configurando Ambiente - Windows**
+
+```bash
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+.\setup_raico.ps1
+
+```
+
+
+### **2. Configurando Ambiente - Linux**
 
 ```bash
 chmod +x setup_raico.sh
+./setup_raico.sh
 ```
 
-### **3. Execute o comando para configuração dinâmica do projeto na raiz do projeto**
+### **2. Configurando Ambiente - Manual**
 
 ```bash
-./setup_raico.sh
+Você pode analisar o passo a passo nos arquivos de configuração e instalar manualmente em seu terminal
 ```
 
 ### **Caso queira testar após configurar o projeto e atualizar o .env:**
