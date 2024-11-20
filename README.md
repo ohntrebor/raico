@@ -127,3 +127,9 @@ source venv/bin/activate  # No Windows: venv\Scripts\activate
 pip install -r scripts/requirements.txt
 ```
 
+### **4. Testar**
+
+```bash
+pytest -m gemini # exemplo, rodando Gemini
+pytest -m openai # exemplo, rodando Chat-GPT
+```
