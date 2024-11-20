@@ -72,9 +72,9 @@ jobs:
 
 ```
 
-## 🐈‍⬛ Após a configuração, dando sucesso ou erro, as sugestões da IA aparecerão como comentários do seu PR, facilitando assim a leitura
+## 🐈‍⬛ Após incluir o pipeline em seu repositório, as sugestões/correções/elogios serão comentadas pela IA em seu PR, ex:
 
-![alt text](print_ex_pr.png)
+![image](https://github.com/user-attachments/assets/031c397f-fd46-429a-9df6-f74cd1cd324c)
 
 
 <br><br>
