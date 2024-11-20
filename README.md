@@ -66,7 +66,7 @@ jobs:
           api_key: ${{ secrets.GEMINI_API_KEY }} # Cadastrar a API_KEY no secrests do seu repositório
           ai_model: ${{ env.AI_MODEL }} # No exemplo foi definida no pipe, mas pode cadastrar no seu repositório se preferir
           github_token: ${{ secrets.GITHUB_TOKEN }} # O Github gere automático em pipelines, não precisa gerar
-          prompt: ${{ env.PROMPT }} # No exemplo foi definida no pipe, mas pode cadastrar no seu repositório se preferir
+         # (opcional) prompt: ${{ env.PROMPT }} #  Caso não defina um prompt aqui, será considerado o prompt default do repositório RAICO
 
 ```
 

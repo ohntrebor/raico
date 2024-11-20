@@ -1,4 +1,4 @@
-name: RAICO Analyze
+name: RAICO Review
 
 on:
   pull_request:
@@ -8,19 +8,22 @@ permissions:
   pull-requests: write
   contents: write
 
+env:
+  AI_PROVIDER: "gemini"
+  AI_MODEL: "gemini-1.5-flash-latest"
+  PROMPT: "Com base nas alterações realizadas no meu PR, gostaria de obter recomendações específicas sobre boas práticas de segurança e estilo de código, considerando que este projeto é um [descrição do projeto]. Por favor, analise as do meu PR e forneça sugestões práticas e contextualizadas para melhorar a qualidade do código, garantindo alinhamento com padrões de segurança e consistência com as melhores práticas do mercado."
+
 jobs:
   analyze:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🐈‍⬛ Run Pull Request Analysis
-        uses: analyze-pr@main
+
+      - name: 🤖 Run Pull Request Review
+        uses: ohntrebor/raico/.github/actions/analyze-pr@main
         with:
-          openai_api_key: ${{ secrets.OPENAI_API_KEY }}
-          openai_model: ${{ vars.OPENAI_API_MODEL }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          prompt: |
-            Analise este Pull Request. Verifique:
-            - Melhorias de código e aderência às boas práticas.
-            - Possíveis bugs ou inconsistências.
-            - Sugestões de melhorias.
+          ai_provider: ${{ env.AI_PROVIDER }} # No exemplo foi definida no pipe, mas pode cadastrar no seu repositório se preferir
+          api_key: ${{ secrets.GEMINI_API_KEY }} # Cadastrar a API_KEY no secrests do seu repositório
+          ai_model: ${{ env.AI_MODEL }} # No exemplo foi definida no pipe, mas pode cadastrar no seu repositório se preferir
+          github_token: ${{ secrets.GITHUB_TOKEN }} # O Github gere automático em pipelines, não precisa gerar
+         # prompt: ${{ env.PROMPT }} # (opcional) Caso não defina um prompt aqui, será considerado o prompt default do repositório RAICO
