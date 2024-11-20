@@ -108,7 +108,9 @@ def review_pr(openai_api_key, github_token, repo_name, pr_number, prompt_path, o
                     )
 
         # Gera o comentário consolidado com todos os feedbacks
-        summary = f"**Análise Automática do PR pela RAICO:**\n\n{'\n\n'.join(overall_feedback)}"
+        summary = (
+            f"**Análise Automática do PR pela RAICO:**\n\n" + "\n\n".join(overall_feedback)
+        )
         pr.create_issue_comment(summary)
         print("Comentário do resumo do PR criado com sucesso!")
 
