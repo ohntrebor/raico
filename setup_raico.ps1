@@ -1,6 +1,6 @@
 Write-Host "Iniciando a configuração do projeto RAICO..."
 
-# Verificar se o Python 3.8+ está instalado
+# 1. Verificar se o Python 3.8+ está instalado
 Write-Host "🔍 Verificando a versão do Python instalada..."
 $python = Get-Command python -ErrorAction SilentlyContinue
 
@@ -33,7 +33,6 @@ if ($python) {
     Write-Host "Por favor, instale o Python 3.8 ou superior para continuar: https://www.python.org/downloads/"
     exit 1
 }
-
 
 # 2. Criar ambiente virtual
 Write-Host "🔨 Criando ambiente virtual..."
@@ -69,6 +68,8 @@ if ($LASTEXITCODE -ne 0) {
 # 5. Instalar dependências
 Write-Host "📦 Instalando dependências do projeto..."
 pip install -r scripts/requirements.txt
+pip install pytest
+pip install python-dotenv
 if ($LASTEXITCODE -ne 0) {
     Write-Host "❌ Falha ao instalar dependências."
     exit 1

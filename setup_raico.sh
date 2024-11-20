@@ -60,6 +60,8 @@ pip install --upgrade pip || { echo "Falha ao atualizar o pip"; exit 1; }
 # 5. Instalar dependências do projeto
 echo "Instalando as dependências do projeto..."
 pip install -r scripts/requirements.txt || { echo "Falha ao instalar dependências"; exit 1; }
+pip install pytest
+pip install python-dotenv
 
 # 6. Configurar o arquivo .env
 echo "Verificando o arquivo .env..."

@@ -1,6 +1,11 @@
+import sys
 import os
 import pytest
 from dotenv import load_dotenv
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# importa o ai_dispatcher do scripts
 from scripts.ai_dispatcher import ai_dispatcher
 
 # Carrega as variáveis do .env (local)
