@@ -81,6 +81,28 @@ def review_pr_gemini(ai_api_key, github_token, repo_name, pr_number, prompt_path
         # Lista para consolidar o feedback gerado pela IA para os arquivos no PR.
         overall_feedback = []
 
+        # Adiciona o cabeçalho criativo ao comentário
+        ascii_art = """
+```diff
+     .---.     
+    } n n {    
+     \_-_/     
+.'c ."|_|". n`.
+'--'  /_\  `--'
+     /| |\     
+    [_] [_]     
+
+**Olá, sou a agente RAICO!**  
+Realizei uma análise detalhada do seu Pull Request com base no prompt fornecido.  
+Seguem minhas sugestões e observações para ajudar a aprimorar seu código.  
+```
+
+<hr>
+<br>
+"""
+
+        overall_feedback.append(intro_ascii)
+
         # Itera sobre os arquivos modificados no PR.
         for file in pr.get_files():
             file_path = file.filename  # Caminho do arquivo no repositório.
@@ -106,13 +128,12 @@ def review_pr_gemini(ai_api_key, github_token, repo_name, pr_number, prompt_path
                 )
 
         # Cria o comentário final com todo o feedback consolidado.
-        summary = (
-            f"**Review Automático do PR pelo RAICO 🤖:**\n\n" + "\n\n".join(overall_feedback)
-        )
+        summary = "\n\n".join(overall_feedback)
         pr.create_issue_comment(summary)  # Adiciona o comentário ao PR.
         print("Comentário do resumo do PR criado com sucesso!")  # Confirmação de sucesso.
 
     except Exception as e:
         # Captura erros gerais e cria um comentário de erro no PR.
         print(f"Erro ao revisar o PR com Gemini: {e}")
-        pr.create_issue_comment(f"**Erro no review automatizada pelo RAICO 🤖:**\n\n{str(e)}")
+        pr.create_issue_comment(f"**Erro no review automatizado pelo RAICO 🤖:**\n\n{str(e)}")
+
