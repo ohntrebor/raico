@@ -1,4 +1,4 @@
-from scripts.github.commented_pr import GithubPRHandler
+from scripts.github_handler.commented_pr import GithubPRHandler
 import requests
 
 # Função principal para revisar um Pull Request (PR).
