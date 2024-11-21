@@ -73,8 +73,10 @@ jobs:
 ```
 
 ## 🐈‍⬛ Após incluir o pipeline em seu repositório, as sugestões/correções/elogios serão comentadas pela IA em seu PR, ex:
+obs: Os comentários gerados pela IA serão atualizados a cada novo push na branch do PR, garantindo que apenas o feedback mais recente seja mantido, enquanto os comentários anteriores são deletados automaticamente.
 
-![image](https://github.com/user-attachments/assets/031c397f-fd46-429a-9df6-f74cd1cd324c)
+![image](https://github.com/user-attachments/assets/85e81e1d-884e-45cd-95b5-564642915cac)
+
 
 
 <br><br>
