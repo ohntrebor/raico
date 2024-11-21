@@ -64,6 +64,35 @@ def review_pr_openai(ai_api_key, github_token, repo_name, pr_number, prompt_path
             # Retorna uma mensagem de erro específica para o arquivo
             return f"Erro ao processar o arquivo {file_path} com o modelo {ai_model}: {e}"
 
+    def delete_previous_comments(pr, github_token, repo_name, bot_username="github-actions[bot]"):
+        """
+        Deleta os comentários anteriores feitos pelo bot no Pull Request.
+
+        Args:
+            pr (PullRequest): Objeto do Pull Request do GitHub.
+            github_token (str): Token de autenticação do GitHub.
+            repo_name (str): Nome do repositório no formato "owner/repo".
+            bot_username (str): Nome do bot autor dos comentários (default: github-actions[bot]).
+        """
+        # Cabeçalhos para autenticação na API REST do GitHub
+        headers = {"Authorization": f"Bearer {github_token}"}
+
+        # Obtém todos os comentários no PR
+        comments = pr.get_issue_comments()
+        for comment in comments:
+            # Filtra comentários feitos pelo bot
+            if comment.user.login == bot_username:
+                try:
+                    # Deleta o comentário via API REST
+                    url = f"https://api.github.com/repos/{repo_name}/issues/comments/{comment.id}"
+                    response = requests.delete(url, headers=headers)
+                    if response.status_code == 204:
+                        print(f"Comentário deletado: {comment.id}")
+                    else:
+                        print(f"Erro ao deletar comentário {comment.id}: {response.text}")
+                except Exception as e:
+                    print(f"Erro ao deletar comentário {comment.id}: {e}")
+
     try:
         # Carrega o prompt do arquivo especificado
         prompt = load_prompt()
@@ -72,6 +101,9 @@ def review_pr_openai(ai_api_key, github_token, repo_name, pr_number, prompt_path
         g = Github(github_token)
         repo = g.get_repo(repo_name)
         pr = repo.get_pull(int(pr_number))
+
+        # Deleta os comentários anteriores feitos pelo bot
+        delete_previous_comments(pr, github_token, repo_name)
 
         # Lista para armazenar feedbacks e erros de análise
         overall_feedback = []
@@ -120,4 +152,4 @@ def review_pr_openai(ai_api_key, github_token, repo_name, pr_number, prompt_path
     except Exception as e:
         # Lida com erros gerais durante o processo de análise
         print(f"Erro ao revisar o PR: {e}")
-        post_error_comment(github_token, repo_name, pr_number, str(e))
+        pr.create_issue_comment(f"**Erro na análise automatizada pelo RAICO 🤖:**\n\n{str(e)}")
