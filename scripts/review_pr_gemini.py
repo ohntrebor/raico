@@ -80,7 +80,7 @@ def review_pr_gemini(ai_api_key, github_token, repo_name, pr_number, prompt_path
 
         # Adiciona o cabeçalho criativo ao comentário
         ascii_art = """
-```diff
+```python
      .---.     
     } n n {    
      \_-_/     
@@ -95,7 +95,6 @@ Seguem minhas sugestões e observações para ajudar a aprimorar seu código.
 ```
 
 <hr>
-<br>
 """
 
         overall_feedback = [ascii_art]
