@@ -89,7 +89,7 @@ def review_pr_gemini(ai_api_key, github_token, repo_name, pr_number, prompt_path
      /| |\     
     [_] [_]     
 
-**Olá, sou a agente RAICO!**  
+**Olá, sou o agente RAICO!**  
 Realizei uma análise detalhada do seu Pull Request com base no prompt fornecido.  
 Seguem minhas sugestões e observações para ajudar a aprimorar seu código.  
 ```
