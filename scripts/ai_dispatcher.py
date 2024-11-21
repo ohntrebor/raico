@@ -1,6 +1,6 @@
 import os
-from scripts.analyze_pr_openai import review_pr_openai
-from scripts.analyze_pr_gemini import review_pr_gemini  # Importa o método para o Gemini
+from scripts.review_pr_openai import review_pr_openai
+from scripts.review_pr_gemini import review_pr_gemini
 
 def ai_dispatcher():
     """

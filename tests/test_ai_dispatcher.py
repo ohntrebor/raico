@@ -7,8 +7,8 @@ from dotenv import load_dotenv
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # Importa os métodos específicos
-from scripts.analyze_pr_openai import review_pr_openai
-from scripts.analyze_pr_gemini import review_pr_gemini
+from scripts.review_pr_openai import review_pr_openai
+from scripts.review_pr_gemini import review_pr_gemini
 
 # Carrega as variáveis do .env (local)
 load_dotenv()
