@@ -1,11 +1,21 @@
+from scripts.github.commented_pr import GithubPRHandler
 import requests
-from github import Github
 
-# Função principal para revisar um Pull Request (PR) utilizando a API Gemini e GitHub.
+# Função principal para revisar um Pull Request (PR).
 def review_pr_gemini(ai_api_key, github_token, repo_name, pr_number, prompt_path, ai_model, ai_version):
-    
-    # Função auxiliar para carregar o prompt a partir de um arquivo.
-    # O prompt é utilizado para orientar a análise dos arquivos pela IA.
+    """
+    Função principal para revisar um Pull Request (PR) utilizando a API Gemini e GitHub.
+
+    Args:
+        ai_api_key (str): Chave de autenticação da API Gemini.
+        github_token (str): Token de autenticação do GitHub.
+        repo_name (str): Nome do repositório no formato "owner/repo".
+        pr_number (int): Número do Pull Request.
+        prompt_path (str): Caminho para o arquivo de prompt personalizado.
+        ai_model (str): Modelo da API Gemini.
+        ai_version (str): Versão da API Gemini.
+    """
+    # Função auxiliar para carregar o prompt
     def load_prompt():
         try:
             # Abre e lê o conteúdo do arquivo de prompt especificado pelo caminho.
@@ -53,83 +63,37 @@ def review_pr_gemini(ai_api_key, github_token, repo_name, pr_number, prompt_path
     try:
         # Carrega o prompt utilizando a função auxiliar.
         prompt = load_prompt()
+        github_handler = GithubPRHandler(github_token)
 
-        # Autentica no GitHub usando o token fornecido.
-        g = Github(github_token)
-        repo = g.get_repo(repo_name)  # Obtém o repositório pelo nome fornecido.
-        pr = repo.get_pull(int(pr_number))  # Obtém o Pull Request específico.
+        # Deleta comentários anteriores
+        pr = github_handler.get_pull_request(repo_name, pr_number)
+        github_handler.delete_previous_comments(pr)
 
-        # Deleta comentários anteriores feitos pelo bot no PR.
-        comments = pr.get_issue_comments()  # Obtém todos os comentários do PR.
-        bot_username = "github-actions[bot]"  # Nome padrão do bot utilizado pelo GitHub Actions.
-        headers = {"Authorization": f"Bearer {github_token}"}  # Cabeçalhos para autenticação na API.
+        # Lista de feedback
+        overall_feedback = []
 
-        for comment in comments:
-            # Filtra apenas os comentários feitos pelo bot.
-            if comment.user.login == bot_username:
-                try:
-                    # Deleta o comentário através da API REST do GitHub.
-                    url = f"https://api.github.com/repos/{repo_name}/issues/comments/{comment.id}"
-                    response = requests.delete(url, headers=headers)
-                    if response.status_code == 204:
-                        print(f"Comentário deletado: {comment.id}")
-                    else:
-                        print(f"Erro ao deletar comentário {comment.id}: {response.text}")
-                except Exception as e:
-                    print(f"Erro ao deletar comentário {comment.id}: {e}")
-
-        # Adiciona o cabeçalho criativo ao comentário
-        ascii_art = """
-```python
-     .---.     
-    } n n {    
-     \_-_/     
-.'c ."|_|". n`.
-'--'  /_\  `--'
-     /| |\     
-    [_] [_]     
-
-**Olá, sou o agente RAICO!**  
-Realizei uma análise detalhada do seu Pull Request com base no prompt fornecido.  
-Seguem minhas sugestões e observações para ajudar a aprimorar seu código.  
-```
-
-<hr>
-"""
-
-        overall_feedback = [ascii_art]
-
-        # Itera sobre os arquivos modificados no PR.
+        # Itera sobre os arquivos do PR e analisa
         for file in pr.get_files():
-            file_path = file.filename  # Caminho do arquivo no repositório.
+            file_path = file.filename
             if not file.patch:
-                # Ignora arquivos que não possuem alterações no PR.
                 print(f"Ignorando {file_path} (sem alterações no PR).")
                 continue
 
-            # Obtém o conteúdo bruto do arquivo utilizando sua URL.
             file_content = requests.get(file.raw_url).text
-            # Analisa o arquivo utilizando a função auxiliar e armazena o feedback.
             feedback = analyze_file_with_gemini(file_path, file_content, prompt)
 
             if "Erro ao processar o arquivo" in feedback:
-                # Adiciona mensagens de erro ao feedback consolidado.
                 overall_feedback.append(
                     f"**Erro ao analisar o arquivo `{file_path}`:**\n\n{feedback}\n\n---"
                 )
             else:
-                # Adiciona feedback gerado pela IA ao feedback consolidado.
                 overall_feedback.append(
                     f"### Arquivo: `{file_path}`\n\n{feedback}\n\n---"
                 )
 
-        # Cria o comentário final com todo o feedback consolidado.
-        summary = "\n\n".join(overall_feedback)
-        pr.create_issue_comment(summary)  # Adiciona o comentário ao PR.
-        print("Comentário do resumo do PR criado com sucesso!")  # Confirmação de sucesso.
+        # Publica o comentário no PR com o feedback
+        github_handler.post_feedback_comment(repo_name, pr_number, overall_feedback)
 
     except Exception as e:
-        # Captura erros gerais e cria um comentário de erro no PR.
         print(f"Erro ao revisar o PR com Gemini: {e}")
-        pr.create_issue_comment(f"**Erro no review automatizado pelo RAICO 🤖:**\n\n{str(e)}")
-
+        github_handler.post_error_comment(repo_name, pr_number, str(e))
