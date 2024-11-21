@@ -72,14 +72,11 @@ def review_pr_gemini(ai_api_key, github_token, repo_name, pr_number, prompt_path
                     url = f"https://api.github.com/repos/{repo_name}/issues/comments/{comment.id}"
                     response = requests.delete(url, headers=headers)
                     if response.status_code == 204:
-                        print(f"Comentário deletado: {comment.id}")  # Sucesso na deleção.
+                        print(f"Comentário deletado: {comment.id}")
                     else:
-                        print(f"Erro ao deletar comentário {comment.id}: {response.text}")  # Erro na deleção.
+                        print(f"Erro ao deletar comentário {comment.id}: {response.text}")
                 except Exception as e:
-                    print(f"Erro ao deletar comentário {comment.id}: {e}")  # Captura exceções inesperadas.
-
-        # Lista para consolidar o feedback gerado pela IA para os arquivos no PR.
-        overall_feedback = []
+                    print(f"Erro ao deletar comentário {comment.id}: {e}")
 
         # Adiciona o cabeçalho criativo ao comentário
         ascii_art = """
@@ -101,7 +98,7 @@ Seguem minhas sugestões e observações para ajudar a aprimorar seu código.
 <br>
 """
 
-        overall_feedback.append(intro_ascii)
+        overall_feedback = [ascii_art]
 
         # Itera sobre os arquivos modificados no PR.
         for file in pr.get_files():
