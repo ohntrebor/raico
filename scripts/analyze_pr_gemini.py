@@ -42,7 +42,7 @@ def review_pr_gemini(ai_api_key, github_token, repo_name, pr_number, prompt_path
         repo = g.get_repo(repo_name)
         pr = repo.get_pull(int(pr_number))
 
-        # Atualizar comentários anteriores feitos pelo bot
+        # Deletar comentários anteriores feitos pelo bot
         comments = pr.get_issue_comments()
         bot_username = "github-actions[bot]"  # Nome do bot
         headers = {"Authorization": f"Bearer {github_token}"}
@@ -50,16 +50,15 @@ def review_pr_gemini(ai_api_key, github_token, repo_name, pr_number, prompt_path
         for comment in comments:
             if comment.user.login == bot_username:
                 try:
-                    # Atualizar comentário para indicar que foi "ocultado"
+                    # Deletar o comentário via API REST
                     url = f"https://api.github.com/repos/{repo_name}/issues/comments/{comment.id}"
-                    payload = {"body": "[Comentário ocultado pelo bot para evitar duplicidade]"}
-                    response = requests.patch(url, json=payload, headers=headers)
-                    if response.status_code == 200:
-                        print(f"Comentário atualizado (ocultado): {comment.id}")
+                    response = requests.delete(url, headers=headers)
+                    if response.status_code == 204:
+                        print(f"Comentário deletado: {comment.id}")
                     else:
-                        print(f"Erro ao ocultar comentário {comment.id}: {response.text}")
+                        print(f"Erro ao deletar comentário {comment.id}: {response.text}")
                 except Exception as e:
-                    print(f"Erro ao ocultar comentário {comment.id}: {e}")
+                    print(f"Erro ao deletar comentário {comment.id}: {e}")
 
         # Análise do PR
         overall_feedback = []
