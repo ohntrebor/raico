@@ -1,9 +1,9 @@
-import requests
 from github import Github
+import requests
 
 def review_pr_gemini(ai_api_key, github_token, repo_name, pr_number, prompt_path, ai_model, ai_version):
     """
-    Função para analisar Pull Requests usando o Gemini.
+    Função para analisar Pull Requests usando o Gemini e ocultar comentários anteriores do bot.
 
     Args:
         ai_api_key (str): Chave de autenticação da API Gemini.
@@ -61,6 +61,18 @@ def review_pr_gemini(ai_api_key, github_token, repo_name, pr_number, prompt_path
         g = Github(github_token)
         repo = g.get_repo(repo_name)
         pr = repo.get_pull(int(pr_number))
+
+        # Ocultar comentários anteriores do bot
+        comments = pr.get_issue_comments()
+        bot_username = "github-actions[bot]"
+
+        for comment in comments:
+            if comment.user.login == bot_username:
+                try:
+                    comment.hide()  # Oculta o comentário
+                    print(f"Comentário ocultado: {comment.id}")
+                except Exception as e:
+                    print(f"Erro ao ocultar comentário {comment.id}: {e}")
 
         # Lista para armazenar feedback consolidado
         overall_feedback = []
