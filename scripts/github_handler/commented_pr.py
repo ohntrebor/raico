@@ -71,28 +71,32 @@ class GithubPRHandler:
 **Olá, sou o agente RAICO!**  
 Realizei uma análise detalhada do seu Pull Request com base no prompt fornecido.  
 Seguem minhas sugestões e observações para ajudar a aprimorar seu código.  
-<hr> """ # Monta o corpo do comentário com feedback consolidado feedback_body = "\n\n".join([ascii_art] + feedback_list)
+```
+<hr>
+"""
+        # Monta o corpo do comentário com feedback consolidado
+        feedback_body = "\n\n".join([ascii_art] + feedback_list)
 
-    try:
-        # Obtém o PR e posta o comentário
-        pr = self.get_pull_request(repo_name, pr_number)
-        pr.create_issue_comment(feedback_body)
-        print("Comentário criado com sucesso!")
-    except Exception as e:
-        print(f"Erro ao criar comentário no PR: {e}")
+        try:
+            # Obtém o PR e posta o comentário
+            pr = self.get_pull_request(repo_name, pr_number)
+            pr.create_issue_comment(feedback_body)
+            print("Comentário criado com sucesso!")
+        except Exception as e:
+            print(f"Erro ao criar comentário no PR: {e}")
 
-def post_error_comment(self, repo_name, pr_number, error_message):
-    """
-    Publica um comentário no Pull Request indicando que ocorreu um erro.
+    def post_error_comment(self, repo_name, pr_number, error_message):
+        """
+        Publica um comentário no Pull Request indicando que ocorreu um erro.
 
-    Args:
-        repo_name (str): Nome do repositório no formato "owner/repo".
-        pr_number (int): Número do Pull Request.
-        error_message (str): Mensagem de erro a ser publicada.
-    """
-    try:
-        pr = self.get_pull_request(repo_name, pr_number)
-        pr.create_issue_comment(f"**Erro no review automatizado pelo RAICO 🤖:**\n\n{error_message}")
-        print("Comentário de erro criado com sucesso!")
-    except Exception as e:
-        print(f"Erro ao criar comentário de erro no PR: {e}")
+        Args:
+            repo_name (str): Nome do repositório no formato "owner/repo".
+            pr_number (int): Número do Pull Request.
+            error_message (str): Mensagem de erro a ser publicada.
+        """
+        try:
+            pr = self.get_pull_request(repo_name, pr_number)
+            pr.create_issue_comment(f"**Erro no review automatizado pelo RAICO 🤖:**\n\n{error_message}")
+            print("Comentário de erro criado com sucesso!")
+        except Exception as e:
+            print(f"Erro ao criar comentário de erro no PR: {e}")
