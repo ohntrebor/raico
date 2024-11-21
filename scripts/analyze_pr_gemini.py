@@ -44,17 +44,17 @@ def review_pr_gemini(ai_api_key, github_token, repo_name, pr_number, prompt_path
 
         # Ocultar comentários anteriores usando a API REST
         comments = pr.get_issue_comments()
-        bot_username = "github-actions[bot]"  # Nome do bot
+        bot_username = "github-actions[bot]"  # Ajuste se necessário
         headers = {"Authorization": f"Bearer {github_token}"}
 
         for comment in comments:
             if comment.user.login == bot_username:
                 try:
                     # Ocultar comentário via API REST
-                    url = f"https://api.github.com/repos/{repo_name}/issues/comments/{comment.id}"
-                    payload = {"hidden": True}
-                    response = requests.patch(url, json=payload, headers=headers)
-                    if response.status_code == 200:
+                    url = f"https://api.github.com/repos/{repo_name}/issues/comments/{comment.id}/reactions"
+                    payload = {"content": "hooray"}  # Reação padrão ao esconder
+                    response = requests.delete(url, headers=headers)
+                    if response.status_code == 204:
                         print(f"Comentário ocultado: {comment.id}")
                     else:
                         print(f"Erro ao ocultar comentário {comment.id}: {response.text}")
