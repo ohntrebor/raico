@@ -14,7 +14,7 @@ def ai_dispatcher():
     github_token = os.getenv("GITHUB_TOKEN")
     repo_name = os.getenv("GITHUB_REPOSITORY")
     pr_number = os.getenv("PR_NUMBER")
-    prompt_path = os.getenv("PROMPT_PATH", "scripts/prompts/default_prompt.txt")
+    prompt_path = os.getenv("PROMPT_PATH", "scripts/prompts/review_pr_default.txt")
 
 
 

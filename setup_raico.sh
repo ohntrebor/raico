@@ -76,7 +76,7 @@ AI_VERSION="v1beta"
 GITHUB_REPOSITORY="github.com/seu-usuario/seu-repo"
 GITHUB_TOKEN="seu_token_github"
 PR_NUMBER="7"
-PROMPT_PATH="scripts/prompts/default_prompt.txt"
+PROMPT_PATH="scripts/prompts/review_pr_default.txt"
 EOT
     echo "Arquivo .env criado."
 else
@@ -85,10 +85,10 @@ fi
 
 # 7. Verificar a existência do arquivo de prompt
 echo "Verificando o arquivo de prompt..."
-if [ ! -f "scripts/prompts/default_prompt.txt" ]; then
+if [ ! -f "scripts/prompts/review_pr_default.txt" ]; then
     # Cria o arquivo de prompt se não existir
     mkdir -p scripts/prompts
-    echo "Este é um prompt genérico para revisão de Pull Requests." > scripts/prompts/default_prompt.txt
+    echo "Este é um prompt genérico para revisão de Pull Requests." > scripts/prompts/review_pr_default.txt
     echo "Arquivo de prompt criado."
 else
     echo "Arquivo de prompt já existe."

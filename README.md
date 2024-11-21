@@ -102,7 +102,7 @@ Certifique-se de configurar o arquivo `.env` com as seguintes variáveis no ambi
   GITHUB_REPOSITORY: "github.com/seu-github/seu-repo"
   GITHUB_TOKEN: "seu github token"
   PR_NUMBER: "7" // Número do PR que você quer revisar (do seu repo)
-  PROMPT_PATH: "scripts/prompts/default_prompt.txt" // mantenha esse path, e altere o prompt a partir desse arquivo
+  PROMPT_PATH: "scripts/prompts/review_pr_default.txt" // mantenha esse path, e altere o prompt a partir desse arquivo
 ```
 
 ## 📖 Configuração Dinâmica do Projeto

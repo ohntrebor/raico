@@ -71,11 +71,11 @@ runs:
         GITHUB_REPOSITORY: ${{ github.repository }}
         GITHUB_TOKEN: ${{ inputs.github_token }}
         PR_NUMBER: ${{ github.event.pull_request.number }}
-        PROMPT_PATH: scripts/prompts/default_prompt.txt
+        PROMPT_PATH: scripts/prompts/review_pr_default.txt
       run: |
         cd raico
         if [ -n "${{ inputs.prompt }}" ]; then
-          echo "${{ inputs.prompt }}" > scripts/prompts/default_prompt.txt
+          echo "${{ inputs.prompt }}" > scripts/prompts/review_pr_default.txt
         fi        
         source venv/bin/activate
         export PYTHONPATH=$PYTHONPATH:$(pwd)

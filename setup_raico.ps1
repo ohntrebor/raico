@@ -87,7 +87,7 @@ AI_VERSION="v1beta"
 GITHUB_REPOSITORY="github.com/seu-usuario/seu-repo"
 GITHUB_TOKEN="seu_token_github"
 PR_NUMBER="7"
-PROMPT_PATH="scripts/prompts/default_prompt.txt"
+PROMPT_PATH="scripts/prompts/review_pr_default.txt"
 "@ > .env
     Write-Host "✅ Arquivo .env criado."
 } else {
@@ -96,9 +96,9 @@ PROMPT_PATH="scripts/prompts/default_prompt.txt"
 
 # 7. Verificar arquivo de prompt
 Write-Host "📄 Verificando arquivo de prompt..."
-if (-not (Test-Path "scripts/prompts/default_prompt.txt")) {
+if (-not (Test-Path "scripts/prompts/review_pr_default.txt")) {
     New-Item -ItemType Directory -Path "scripts/prompts" -Force | Out-Null
-    "Este é um prompt genérico para revisão de Pull Requests." > "scripts/prompts/default_prompt.txt"
+    "Este é um prompt genérico para revisão de Pull Requests." > "scripts/prompts/review_pr_default.txt"
     Write-Host "✅ Arquivo de prompt criado."
 } else {
     Write-Host "⚠️ Arquivo de prompt já existe."
