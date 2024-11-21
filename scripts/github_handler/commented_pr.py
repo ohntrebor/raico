@@ -68,9 +68,8 @@ class GithubPRHandler:
      /| |\     
     [_] [_]     
 
-**Olá, sou o agente RAICO!**  
-Realizei uma análise detalhada do seu Pull Request com base no prompt fornecido.  
-Seguem minhas sugestões e observações para ajudar a aprimorar seu código.  
+Olá, sou o agente RAICO, seu assistente especializado em revisão de código!
+Após uma revisão detalhada do seu Pull Request, aqui estão as minhas considerações:
 ```
 <hr>
 """
