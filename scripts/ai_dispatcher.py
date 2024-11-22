@@ -27,7 +27,7 @@ def ai_dispatcher():
             repo_name=repo_name,
             pr_number=pr_number,
             prompt_path=prompt_path,
-            openai_model=ai_model
+            ai_model=ai_model
         )
 
     # Provider Gemini
