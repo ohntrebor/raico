@@ -22,7 +22,7 @@ def ai_dispatcher():
     repo_name = os.getenv("GITHUB_REPOSITORY")
     pr_number = os.getenv("PR_NUMBER")
     prompt_path = os.getenv("PROMPT_PATH", "scripts/prompts/review_pr_default.txt")
-    review_type = os.getenv("REVIEW_TYPE", ReviewType.FILE_DIFF_REVIEW.value)
+    review_type = os.getenv("REVIEW_TYPE", ReviewType.LINE_DIFF_REVIEW.value)
 
     # Provider OpenAI - File Diff Review
     def method_openai_pr_review_file():
