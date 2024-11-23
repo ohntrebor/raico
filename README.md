@@ -38,7 +38,7 @@ Este repositório foi projetado para ser **reutilizável** por qualquer outro re
 ➡️ Para revisar seu PR com IA, copie e cole o código YAML abaixo no arquivo .github/workflows/meu-pipeline.yml do seu repositório 😁:
 
 ```yaml
-name: Review Pull Request
+name: 🤖 AI Review PR
 
 on:
   pull_request:
@@ -49,10 +49,18 @@ permissions:
   contents: write
 
 env:
-  AI_PROVIDER: "gemini"
-  AI_MODEL: "gemini-1.5-flash-latest"
-  AI_VERSION: "v1beta"
-  PROMPT: "Com base nas alterações realizadas no meu PR, gostaria de obter recomendações específicas sobre boas práticas de segurança e estilo de código, considerando que este projeto é um [descrição do projeto]. Por favor, analise as do meu PR e forneça sugestões práticas e contextualizadas para melhorar a qualidade do código, garantindo alinhamento com padrões de segurança e consistência com as melhores práticas do mercado."
+  AI_PROVIDER: "openai"
+  AI_MODEL: "gpt-3.5-turbo"
+  AI_VERSION: ""
+  PROMPT: |
+    Você é um especialista em revisão de código para Pull Requests. Revise as alterações de forma crítica e prática, focando em segurança, performance, legibilidade e manutenção. Sua análise deve:
+      - Apresente apenas pontos que impactam segurança, performance, legibilidade ou manutenção. Evite ao máximo recomendações desnecessárias, se estiver tudo acerto, apenas diga que o PR está apto para o merge, e parabenize o autor.
+      - Caso haja problemas criticos ou melhorias significativas, apenas cite, demonstrando como corrigir com exemplos de código claros e curtos.
+      - ❌ Rejeite o PR se houver problemas críticos (bugs, segurança, erros graves). Explique claramente o problema, mostre o trecho problemático e sugira uma correção com exemplo.
+      - ⚠️ Aprove o PR com ressalvas se funcional, mas com melhorias possíveis. Dê sugestões objetivas para refinar o código.
+      - ✅ Aprove o PR se estiver excelente, parabenize e destaque brevemente o que foi bem executado.
+
+
 
 jobs:
   raico-review-pr:
@@ -64,12 +72,15 @@ jobs:
         uses: ohntrebor/raico/.github/actions/review-pr@main
         with:
           ai_provider: ${{ env.AI_PROVIDER }} # No exemplo foi definida no pipe, mas pode cadastrar no seu repositório se preferir
-          ai_api_key: ${{ secrets.GEMINI_API_KEY }} # Cadastrar a API_KEY no secrests do seu repositório
+          ai_api_key: ${{ secrets.OPENAI_API_KEY }} # Cadastrar a API_KEY no secrests do seu repositório
           ai_model: ${{ env.AI_MODEL }} # No exemplo foi definida no pipe, mas pode cadastrar no seu repositório se preferir
-          ai_version: ${{ env.AI_VERSION }} # (opcional) dependendo da AI será solicitado uma versão
+          #ai_version: ${{ env.AI_VERSION }} # (opcional) dependendo da AI será solicitado uma versão
           github_token: ${{ secrets.GITHUB_TOKEN }} # O Github gere automático em pipelines, não precisa gerar
-         # prompt: ${{ env.PROMPT }} # (opcional) Caso não defina um prompt aqui, será considerado o prompt default do repositório RAICO
+          review_type: 2
+          prompt: ${{ env.PROMPT }} # (opcional) Caso não defina um prompt aqui, será considerado o prompt default do repositório RAICO
 
+# review_type: 1 Review Files, é um review por arquivos modificados, consome mais tokens por ser um review mais completo
+# review_type: 2 Review Lines, é um review por lonhas modificadas, consome menos tokens por ser um review menos completo 
 ```
 
 ## 🐈‍⬛ Após incluir o pipeline em seu repositório, as sugestões/correções/elogios serão comentadas pela IA em seu PR, ex:
