@@ -24,7 +24,7 @@ def ai_dispatcher():
     review_type = os.getenv("REVIEW_TYPE", ReviewType.FILE_DIFF_REVIEW.value)
 
     # Provider OpenAI - File Diff Review
-    def openai_pr_review_file():
+    def method_openai_pr_review_file():
         return openai_pr_review_file(
             ai_api_key=ai_api_key,
             github_token=github_token,
@@ -35,7 +35,7 @@ def ai_dispatcher():
         )
 
     # Provider OpenAI - Line Diff Review
-    def openai_pr_review_line():
+    def method_openai_pr_review_line():
         return openai_pr_review_line(
             ai_api_key=ai_api_key,
             github_token=github_token,
@@ -45,7 +45,7 @@ def ai_dispatcher():
         )
 
     # Provider Gemini - File Diff Review
-    def gemini_pr_review_file():
+    def method_gemini_pr_review_file():
         return gemini_pr_review_file(
             ai_api_key=ai_api_key,
             github_token=github_token,
@@ -59,11 +59,11 @@ def ai_dispatcher():
     # Provedores Integrados
     provider_methods = {
         "openai": {
-            ReviewType.FILE_DIFF_REVIEW.value: openai_pr_review_file,
-            ReviewType.LINE_DIFF_REVIEW.value: openai_pr_review_line,
+            ReviewType.FILE_DIFF_REVIEW.value: method_openai_pr_review_file,
+            ReviewType.LINE_DIFF_REVIEW.value: method_openai_pr_review_line,
         },
         "gemini": {
-            ReviewType.FILE_DIFF_REVIEW.value: gemini_pr_review_file,
+            ReviewType.FILE_DIFF_REVIEW.value: method_gemini_pr_review_file,
         },
     }
 
