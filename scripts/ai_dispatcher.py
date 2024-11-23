@@ -41,7 +41,8 @@ def ai_dispatcher():
             github_token=github_token,
             repo_name=repo_name,
             pr_number=pr_number,
-            ai_model=ai_model
+            ai_model=ai_model,
+            prompt_path=prompt_path,
         )
 
     # Provider Gemini - File Diff Review
