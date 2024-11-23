@@ -1,7 +1,8 @@
 import os
 from enum import Enum
-from scripts.openai_pr_review_file import openai_pr_review_file
 from scripts.gemini_pr_review_file import gemini_pr_review_file
+from scripts.gemini_pr_review_line import gemini_pr_review_line
+from scripts.openai_pr_review_file import openai_pr_review_file
 from scripts.openai_pr_review_line import openai_pr_review_line
 
 class ReviewType(Enum):
@@ -57,6 +58,18 @@ def ai_dispatcher():
             ai_version=ai_version
         )
 
+    # Provider Gemini - Line Diff Review
+    def method_gemini_pr_review_line():
+        return gemini_pr_review_line(
+            ai_api_key=ai_api_key,
+            github_token=github_token,
+            repo_name=repo_name,
+            pr_number=pr_number,
+            prompt_path=prompt_path,
+            ai_model=ai_model,
+            ai_version=ai_version
+        )
+
     # Provedores Integrados
     provider_methods = {
         "openai": {
@@ -65,6 +78,8 @@ def ai_dispatcher():
         },
         "gemini": {
             ReviewType.FILE_DIFF_REVIEW.value: method_gemini_pr_review_file,
+            ReviewType.LINE_DIFF_REVIEW.value: method_gemini_pr_review_line,
+
         },
     }
 
