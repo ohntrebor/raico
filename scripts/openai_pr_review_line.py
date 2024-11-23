@@ -1,120 +1,102 @@
+from scripts.github_handler.commented_pr import GithubPRHandler
 import openai
-from github import Github
-import json
 
-def openai_pr_review_line(ai_api_key, github_token, repo_name, pr_number, ai_model):
+def openai_pr_review_line(ai_api_key, github_token, repo_name, pr_number, prompt_path, ai_model):
     """
-    Revisa linhas modificadas em um Pull Request no GitHub e comenta diretamente nas linhas alteradas.
+    Função principal para revisar as linhas alteradas de um Pull Request (PR) utilizando a API OpenAI.
 
     Args:
-        ai_api_key (str): Chave da API OpenAI.
-        github_token (str): Token da API do GitHub.
+        ai_api_key (str): Chave de autenticação da API OpenAI.
+        github_token (str): Token de autenticação do GitHub.
         repo_name (str): Nome do repositório no formato "owner/repo".
-        pr_number (str/int): Número do Pull Request.
-        ai_model (str): Modelo OpenAI a ser utilizado.
+        pr_number (int): Número do Pull Request.
+        prompt_path (str): Caminho para o arquivo de prompt personalizado.
+        ai_model (str): Modelo da IA OpenAI (ex: gpt-4).
     """
-    # Autenticação OpenAI e GitHub
+    # Configuração da chave da API OpenAI
     openai.api_key = ai_api_key
-    github_client = Github(github_token)
 
-    try:
-        # Convertendo o PR_NUMBER para inteiro, caso necessário
-        pr_number = int(pr_number)
-    except ValueError:
-        raise ValueError(f"PR_NUMBER '{pr_number}' deve ser um número inteiro.")
+    def load_prompt():
+        """
+        Carrega o texto do prompt a partir de um arquivo.
 
-    try:
-        # Obter o repositório e o PR
-        repo = github_client.get_repo(repo_name)
-        pr = repo.get_pull(pr_number)
-        print(f"Revisando PR: {pr.title} no repositório {repo_name}")
-
-        # Obter os diffs do PR
-        files = pr.get_files()
-        diffs = [{"file_name": file.filename, "patch": file.patch} for file in files if file.patch]
-
-        if not diffs:
-            print("Nenhuma alteração encontrada no PR.")
-            return
-
-        # Processar cada arquivo alterado
-        for diff in diffs:
-            file_name = diff["file_name"]
-            patch = diff["patch"]
-
-            # Chamada para análise com OpenAI
-            comments = analyze_diff_with_openai(file_name, patch, ai_model)
-
-            # Criar comentários diretamente no PR
-            create_comments_on_pr(pr, comments, file_name)
-
-        print("Revisão do PR finalizada com sucesso!")
-    except Exception as e:
-        print(f"Erro ao revisar o Pull Request: {e}")
-
-
-def analyze_diff_with_openai(file_name, diff_content, ai_model):
-    """
-    Envia o diff para a API OpenAI e retorna os comentários.
-
-    Args:
-        file_name (str): Nome do arquivo.
-        diff_content (str): Conteúdo do diff.
-        ai_model (str): Modelo OpenAI a ser utilizado.
-
-    Returns:
-        list: Lista de comentários gerados pelo modelo.
-    """
-    prompt = f"""
-    Você é um assistente especializado em revisão de código.
-    Analise as alterações no arquivo "{file_name}" e identifique problemas ou melhorias no código.
-    Dê feedback construtivo e claro.
-
-    Aqui está o diff do código:
-    ```diff
-    {diff_content}
-    ```
-    Retorne sua análise em formato JSON, com o seguinte formato:
-    {{
-        "comments": [
-            {{
-                "line": <número_da_linha_no_diff>,
-                "comment": "<seu_comentário_aqui>"
-            }}
-        ]
-    }}
-    """
-    try:
-        response = openai.ChatCompletion.create(
-            model=ai_model,
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=500,
-            temperature=0.2,
-        )
-        ai_feedback = json.loads(response["choices"][0]["message"]["content"])
-        return ai_feedback["comments"]
-    except Exception as e:
-        print(f"Erro ao processar análise com OpenAI: {e}")
-        return []
-
-
-def create_comments_on_pr(pr, comments, file_name):
-    """
-    Cria comentários diretamente nas linhas alteradas do PR.
-
-    Args:
-        pr (PullRequest): Objeto do Pull Request.
-        comments (list): Lista de comentários gerados pela análise.
-        file_name (str): Nome do arquivo.
-    """
-    for comment in comments:
+        Returns:
+            str: Texto do prompt.
+        """
         try:
-            pr.create_review_comment(
-                body=comment["comment"],
-                commit_id=pr.head.sha,
-                path=file_name,
-                position=comment["line"]
+            with open(prompt_path, 'r') as file:
+                return file.read()
+        except FileNotFoundError:
+            raise FileNotFoundError(f"Prompt file não encontrado em: {prompt_path}")
+
+    def analyze_patch_with_openai(file_path, patch_content, prompt):
+        """
+        Analisa o patch (linhas alteradas) de um arquivo com base no modelo OpenAI e no prompt.
+
+        Args:
+            file_path (str): Caminho do arquivo.
+            patch_content (str): Conteúdo do patch (alterações no arquivo).
+            prompt (str): Texto do prompt.
+
+        Returns:
+            str: Resposta do modelo OpenAI.
+        """
+        # Cria o prompt completo com as linhas alteradas e o prompt personalizado
+        full_prompt = f"""
+        {prompt}
+        Arquivo: {file_path}
+        Alterações (diff):
+        ```diff
+        {patch_content}
+        ```
+        """
+        try:
+            response = openai.ChatCompletion.create(
+                model=ai_model,
+                messages=[{"role": "user", "content": full_prompt}],
             )
-            print(f"Comentário criado na linha {comment['line']}: {comment['comment']}")
-        except Exception as e:
-            print(f"Erro ao criar comentário na linha {comment['line']}: {e}")
+            return response['choices'][0]['message']['content']
+        except openai.error.OpenAIError as e:
+            return f"Erro ao processar o arquivo {file_path} com o modelo {ai_model}: {e}"
+
+    try:
+        # Carrega o prompt do arquivo especificado
+        prompt = load_prompt()
+
+        # Inicializa o manipulador de PRs do GitHub
+        github_handler = GithubPRHandler(github_token)
+
+        # Deleta os comentários anteriores
+        pr = github_handler.get_pull_request(repo_name, pr_number)
+        github_handler.delete_previous_comments(pr)
+
+        # Lista para consolidar o feedback gerado
+        overall_feedback = []
+
+        # Itera sobre os arquivos do PR e analisa apenas os patches
+        for file in pr.get_files():
+            file_path = file.filename
+            patch_content = file.patch  # Obtemos apenas as alterações (diff)
+
+            if not patch_content:
+                print(f"Ignorando {file_path} (sem alterações no PR).")
+                continue
+
+            # Analisa o patch com o modelo OpenAI
+            feedback = analyze_patch_with_openai(file_path, patch_content, prompt)
+
+            if "Erro ao processar o arquivo" in feedback:
+                overall_feedback.append(
+                    f"**Erro ao analisar o arquivo `{file_path}`:**\n\n{feedback}\n\n---"
+                )
+            else:
+                overall_feedback.append(
+                    f"### Arquivo: `{file_path}`\n\n{feedback}\n\n---"
+                )
+
+        # Publica o comentário no PR com o feedback consolidado
+        github_handler.post_feedback_comment(repo_name, pr_number, overall_feedback)
+
+    except Exception as e:
+        print(f"Erro ao revisar o PR com OpenAI: {e}")
+        github_handler.post_error_comment(repo_name, pr_number, str(e))

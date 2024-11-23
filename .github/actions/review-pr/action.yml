@@ -32,7 +32,7 @@ inputs:
 
   review_type:
     description: "Tipo de revisão que você quer aplicar"
-    required: true
+    required: false
 
 
 runs:
