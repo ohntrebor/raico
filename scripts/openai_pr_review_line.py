@@ -1,8 +1,9 @@
 import openai
 from github import Github
 import requests
+import json
 
-def openai_pr_review_line(ai_api_key, github_token, repo_name, pr_number, ai_model="gpt-4"):
+def openai_pr_review_line(ai_api_key, github_token, repo_name, pr_number, ai_model):
     """
     Revisar Pull Requests no GitHub analisando apenas os diffs das alterações (Line Diff Review).
 
@@ -10,11 +11,18 @@ def openai_pr_review_line(ai_api_key, github_token, repo_name, pr_number, ai_mod
         ai_api_key (str): Chave da API OpenAI.
         github_token (str): Token da API do GitHub.
         repo_name (str): Nome do repositório no formato "owner/repo".
-        pr_number (int): Número do Pull Request.
+        pr_number (str): Número do Pull Request.
         ai_model (str): Modelo OpenAI a ser utilizado (default: gpt-4).
     """
     openai.api_key = ai_api_key
     github_client = Github(github_token)
+
+    # Converta o número do PR para inteiro
+    try:
+        pr_number = int(pr_number)
+    except ValueError:
+        raise ValueError(f"O número do PR '{pr_number}' deve ser um inteiro.")
+
     repo = github_client.get_repo(repo_name)
     pr = repo.get_pull(pr_number)
 
@@ -22,11 +30,12 @@ def openai_pr_review_line(ai_api_key, github_token, repo_name, pr_number, ai_mod
         """
         Obtém o diff de todos os arquivos alterados no PR.
         """
-        diff_url = pr.diff_url
-        response = requests.get(diff_url, headers={"Authorization": f"Bearer {github_token}"})
-        if response.status_code != 200:
-            raise Exception(f"Falha ao obter o diff: {response.status_code} - {response.text}")
-        return response.text
+        diff_content = ""
+        for file in pr.get_files():
+            diff_content += f"### Arquivo: {file.filename}\n{file.patch}\n"
+        if not diff_content:
+            raise Exception("Nenhuma alteração encontrada no Pull Request.")
+        return diff_content
 
     def analyze_diff_with_openai(file_name, diff_content):
         """
@@ -65,9 +74,9 @@ def openai_pr_review_line(ai_api_key, github_token, repo_name, pr_number, ai_mod
             temperature=0.2,
         )
         try:
-            ai_feedback = response["choices"][0]["message"]["content"]
-            return eval(ai_feedback)["comments"]
-        except Exception as e:
+            ai_feedback = json.loads(response["choices"][0]["message"]["content"])
+            return ai_feedback["comments"]
+        except json.JSONDecodeError as e:
             return [{"line": None, "comment": f"Erro ao processar o arquivo: {str(e)}"}]
 
     def post_review_comments(pr, comments):
@@ -91,7 +100,7 @@ def openai_pr_review_line(ai_api_key, github_token, repo_name, pr_number, ai_mod
         feedback = []
         for file in pr.get_files():
             file_name = file.filename
-            file_diff = "\n".join([line for line in diff_lines if file_name in line])
+            file_diff = file.patch
             if not file_diff.strip():
                 continue
 
