@@ -2,7 +2,7 @@ from scripts.github_handler.commented_pr import GithubPRHandler
 import openai
 import requests
 
-def review_pr_openai(ai_api_key, github_token, repo_name, pr_number, prompt_path, ai_model):
+def openai_pr_review_file(ai_api_key, github_token, repo_name, pr_number, prompt_path, ai_model):
     """
     Função principal para revisar um Pull Request (PR) utilizando a API OpenAI.
 

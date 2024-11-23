@@ -2,7 +2,7 @@ from scripts.github_handler.commented_pr import GithubPRHandler
 import requests
 
 # Função principal para revisar um Pull Request (PR).
-def review_pr_gemini(ai_api_key, github_token, repo_name, pr_number, prompt_path, ai_model, ai_version):
+def gemini_pr_review_file(ai_api_key, github_token, repo_name, pr_number, prompt_path, ai_model, ai_version):
     """
     Função principal para revisar um Pull Request (PR) utilizando a API Gemini e GitHub.
 
