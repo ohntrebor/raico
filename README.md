@@ -38,46 +38,78 @@ Este repositório foi projetado para ser **reutilizável** por qualquer outro re
 ➡️ Para revisar seu PR com IA, copie e cole o código YAML abaixo no arquivo .github/workflows/meu-pipeline.yml do seu repositório 😁:
 
 ```yaml
+# Workflow para revisão de Pull Requests utilizando IA
 name: 🤖 AI Review PR
 
 on:
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize] # Ação disparada em PRs abertos e sincronizados
 
+# Permissões necessárias para o workflow
 permissions:
-  pull-requests: write
-  contents: write
+  pull-requests: write # Permite alterar PRs, como adicionar comentários
+  contents: write      # Necessário para acessar e ler o conteúdo do repositório
 
+# Variáveis de ambiente centralizadas para facilitar manutenção
 env:
-  AI_PROVIDER: "openai"
-  AI_MODEL: "gpt-3.5-turbo"
-  AI_VERSION: ""
-  PROMPT: |
-    Você é um especialista em revisão de código para Pull Requests. Revise as alterações de forma crítica e prática, focando em segurança, performance, legibilidade e manutenção. Sua análise deve:
-      - Apresente apenas pontos que impactam segurança, performance, legibilidade ou manutenção. Evite ao máximo recomendações desnecessárias, se estiver tudo acerto, apenas diga que o PR está apto para o merge, e parabenize o autor.
-      - Caso haja problemas criticos ou melhorias significativas, apenas cite, demonstrando como corrigir com exemplos de código claros e curtos.
-      - ❌ Rejeite o PR se houver problemas críticos (bugs, segurança, erros graves). Explique claramente o problema, mostre o trecho problemático e sugira uma correção com exemplo.
-      - ⚠️ Aprove o PR com ressalvas se funcional, mas com melhorias possíveis. Dê sugestões objetivas para refinar o código.
-      - ✅ Aprove o PR se estiver excelente, parabenize e destaque brevemente o que foi bem executado.
+  AI_PROVIDER: "gemini"                    # Provedor de IA utilizado no pipeline
+  AI_MODEL: "gemini-1.5-flash-latest"      # Modelo de IA a ser usado
+  AI_VERSION: "v1beta"                     # Versão da API da IA
+  PROMPT: |                                # Prompt de instruções enviado para a IA
+    Você é um especialista em revisão de código para Pull Requests. Seu objetivo é identificar problemas e analisar alterações no código de forma crítica, seguindo boas práticas globais e critérios técnicos relevantes. Sua análise deve ser sempre breve, objetiva e focada.
 
+    ### Regras para Revisão:
 
+    #### Determinação da Aprovação do PR:
+    1. **❌ Alterações reprovadas:** Identifique problemas críticos que possam causar um exception no sistema, como:
+      - Potenciais exceções não tratadas
+      - Vulnerabilidades de segurança.
+      - Bugs ou erros de execução.
+      - Erros de sintaxe.
+      - Incompatibilidades de tipo.
+      - Falta de declarações.
+      Forneça uma explicação clara e concisa do problema, indicando o trecho exato do código e apresentando uma solução alternativa funcional.
 
+    2. **⚠️ Alterações aprovadas com ressalvas:** Caso o código esteja funcional, mas apresente:
+      - Problemas de performance.
+      - Redundâncias ou necessidade de refatoração.
+      - Melhorias possíveis na legibilidade ou manutenção.
+      Apresente os pontos de melhoria diretamente no trecho do código relevante, com um exemplo concreto de correção.
+
+    3. **✅ Alterações aprovadas:** O código atende às melhores práticas, é funcional e não apresenta problemas críticos. Parabenize brevemente o autor pela solução e reforce os pontos positivos.
+
+    #### Foco e Critérios de Avaliação:
+    - **Evitar irrelevâncias:** Não faça sugestões de impacto mínimo.
+    - **Foco em problemas reais:** Concentre-se exclusivamente em:
+      - Erros ou bugs no código.
+      - Segurança do sistema.
+      - Otimização de desempenho.
+      - Legibilidade e clareza.
+    - **Regras de boas práticas:** Siga os padrões do .NET 6.0 e diretrizes globais.
+
+    #### Como fornecer feedback:
+    - Aponte o trecho exato do código onde há um problema ou oportunidade de melhoria.
+    - Explique a questão de forma prática e direta.
+    - Ofereça uma solução ou exemplo claro e funcional para corrigir ou melhorar o código.
+
+# Definição do job principal para revisão de PRs
 jobs:
-  raico-review-pr:
-    runs-on: ubuntu-latest
+  ai-review-pr:
+    name: 🤖 AI Review PR # Nome do job exibido no GitHub Actions
+    runs-on: ubuntu-latest # Runner utilizado para executar o workflow
 
     steps:
-
-      - name: 🤖 Run Pull Request Review
-        uses: ohntrebor/raico/.github/actions/review-pr@main
+      - name: Run PR Review
+        uses: ohntrebor/raico/.github/actions/review-pr@main # Ação que executa a revisão de PR
         with:
-          ai_provider: ${{ env.AI_PROVIDER }} # No exemplo foi definida no pipe, mas pode cadastrar no seu repositório se preferir
-          ai_api_key: ${{ secrets.OPENAI_API_KEY }} # Cadastrar a API_KEY no secrests do seu repositório
-          ai_model: ${{ env.AI_MODEL }} # No exemplo foi definida no pipe, mas pode cadastrar no seu repositório se preferir
-          #ai_version: ${{ env.AI_VERSION }} # (opcional) dependendo da AI será solicitado uma versão
-          github_token: ${{ secrets.GITHUB_TOKEN }} # O Github gere automático em pipelines, não precisa gerar
-          review_type: 2
-          prompt: ${{ env.PROMPT }} # (opcional) Caso não defina um prompt aqui, será considerado o prompt default do repositório RAICO
+          ai_provider: ${{ env.AI_PROVIDER }} # Provedor de IA (usando a variável centralizada)
+          ai_api_key: ${{ secrets.GEMINI_API_KEY }} # API Key configurada nos secrets do repositório
+          ai_model: ${{ env.AI_MODEL }} # Modelo de IA (referenciado na variável env)
+          ai_version: ${{ env.AI_VERSION }} # Versão da API (referenciado na variável env)
+          github_token: ${{ secrets.GITHUB_TOKEN }} # Token de autenticação padrão do GitHub Actions
+          review_type: 2 # Tipo de revisão (e.g., 1 = por arquivo, 2 = Por alterações)
+          prompt: ${{ env.PROMPT }} # Prompt definido na seção env, para maior clareza
+
 
 # review_type: 1 Review Files, é um review por arquivos modificados, consome mais tokens por ser um review mais completo
 # review_type: 2 Review Lines, é um review por lonhas modificadas, consome menos tokens por ser um review menos completo 
@@ -86,7 +118,8 @@ jobs:
 ## 🐈‍⬛ Após incluir o pipeline em seu repositório, as sugestões/correções/elogios serão comentadas pela IA em seu PR, ex:
 obs: Os comentários gerados pela IA serão atualizados a cada novo push na branch do PR, garantindo que apenas o feedback mais recente seja mantido, enquanto os comentários anteriores são deletados automaticamente.
 
-![image](https://github.com/user-attachments/assets/85e81e1d-884e-45cd-95b5-564642915cac)
+![image](https://github.com/user-attachments/assets/537291b4-182d-419a-b55f-6d592491f5cc)
+
 
 
 
