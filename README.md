@@ -85,7 +85,6 @@ env:
       - Segurança do sistema.
       - Otimização de desempenho.
       - Legibilidade e clareza.
-    - **Regras de boas práticas:** Siga os padrões do .NET 6.0 e diretrizes globais.
 
     #### Como fornecer feedback:
     - Aponte o trecho exato do código onde há um problema ou oportunidade de melhoria.
