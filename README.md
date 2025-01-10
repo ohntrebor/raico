@@ -114,6 +114,54 @@ jobs:
 # review_type: 2 Review Lines, é um review por lonhas modificadas, consome menos tokens por ser um review menos completo 
 ```
 
+## 💡Dica: Caso prefira armazenar todas as variáveis em seu repositório (Melhor para manutenção), ficaria assim:
+```yaml
+# Workflow para revisão de Pull Requests utilizando IA
+name: 🤖 AI Review PR
+
+on:
+  pull_request:
+    types: [opened, synchronize] # Ação disparada em PRs abertos e sincronizados
+
+# Permissões necessárias para o workflow
+permissions:
+  pull-requests: write # Permite alterar PRs, como adicionar comentários
+  contents: write      # Necessário para acessar e ler o conteúdo do repositório
+
+# Definição do job principal para revisão de PRs
+jobs:
+  ai-review-pr:
+    name: 🤖 AI Review PR # Nome do job exibido no GitHub Actions
+    runs-on: ubuntu-latest # Runner utilizado para executar o workflow
+
+    steps:
+
+      # Exibir Provedor e Modelo de IA (opcional)
+      - name: 🎭 Provider
+        run: |
+          echo "AI: ${{ vars.AI_PROVIDER }}"
+          echo "Model: ${{ vars.AI_MODEL }}"
+
+      # Exibir o Prompt (opcional)
+      - name: 📝 Prompt
+        run: |
+          echo "${{ vars.AI_PROMPT }}" | cat
+
+
+      - name: 🔎PR Review
+        uses: ohntrebor/raico/.github/actions/review-pr@main # Ação que executa a revisão de PR
+        with:
+          ai_provider: ${{ vars.AI_PROVIDER }}      # Nome do provedor de IA (variável do repositório)
+          ai_api_key: ${{ secrets.AI_API_KEY }}     # API Key configurada nos secrets do repositório
+          ai_model: ${{ vars.AI_MODEL }}            # Modelo de IA (variável do repositório)
+          ai_version: ${{ vars.AI_VERSION }}        # Versão da API (variável do repositório)
+          github_token: ${{ secrets.GITHUB_TOKEN }} # Token de autenticação padrão do GitHub Actions
+          review_type: ${{ vars.AI_REVIEW_TYPE }}   # Tipo de revisão (1 = por arquivos alterados, 2 = por linhas alteradas)
+          prompt: ${{ vars.AI_PROMPT }}             # Prompt de instruções enviado para a IA
+
+```
+
+
 ## 🐈‍⬛ Após incluir o pipeline em seu repositório, as sugestões/correções/elogios serão comentadas pela IA em seu PR, ex:
 obs: Os comentários gerados pela IA serão atualizados a cada novo push na branch do PR, garantindo que apenas o feedback mais recente seja mantido, enquanto os comentários anteriores são deletados automaticamente.
 
