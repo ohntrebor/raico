@@ -139,3 +139,74 @@ Após uma revisão detalhada do seu Pull Request, aqui estão as minhas consider
             print(f"Comentário na diff criado com sucesso! ({file_path}:{line_number})")
         else:
             print(f"Erro ao criar comentário na diff: {response.text}")
+
+    # Validando ainda
+    def post_inline_comment_with_diff(self, repo_name, pr_number, file_path, patch_content, comment_body):
+            """
+            Publica um comentário inline diretamente na diff do Pull Request.
+
+            Args:
+                repo_name (str): Nome do repositório no formato "owner/repo".
+                pr_number (int): Número do Pull Request.
+                file_path (str): Caminho do arquivo que foi alterado no PR.
+                patch_content (str): Conteúdo do diff do arquivo.
+                comment_body (str): Conteúdo do comentário.
+            """
+            headers = {"Authorization": f"Bearer {self.github_token}"}
+
+            # Buscar a lista de commits para obter o último commit do PR
+            url_commits = f"https://api.github.com/repos/{repo_name}/pulls/{pr_number}/commits"
+            response = requests.get(url_commits, headers=headers)
+
+            if response.status_code != 200:
+                print(f"Erro ao obter commits do PR: {response.text}")
+                return
+
+            commits = response.json()
+            commit_id = commits[-1]["sha"]  # Pegamos o último commit do PR
+
+            # Obter a lista de alterações do PR para encontrar a posição correta
+            url_files = f"https://api.github.com/repos/{repo_name}/pulls/{pr_number}/files"
+            response = requests.get(url_files, headers=headers)
+
+            if response.status_code != 200:
+                print(f"Erro ao obter arquivos do PR: {response.text}")
+                return
+
+            files = response.json()
+            position = None  # Posição correta dentro do diff
+
+            for file in files:
+                if file["filename"] == file_path:
+                    diff_lines = file.get("patch", "").split("\n")
+                    line_count = 0  # Contador para a posição no diff
+                    
+                    for index, line in enumerate(diff_lines):
+                        if line.startswith("@@"):
+                            # Extraindo a numeração real da linha alterada no código
+                            line_count = int(line.split(" ")[2].split(",")[0].replace("-", ""))
+                        elif line.startswith("+"):
+                            # Se for uma linha adicionada, salvamos a posição no diff
+                            position = index + 1
+                            break
+
+            if position is None:
+                print(f"Erro: Não foi possível encontrar a posição correta para {file_path}.")
+                return
+
+            # Criar comentário na diff
+            url_comments = f"https://api.github.com/repos/{repo_name}/pulls/{pr_number}/comments"
+            payload = {
+                "body": comment_body,
+                "commit_id": commit_id,
+                "path": file_path,
+                "position": position,  # Linha correta dentro do diff
+                "side": "RIGHT"
+            }
+
+            response = requests.post(url_comments, headers=headers, json=payload)
+
+            if response.status_code == 201:
+                print(f"✔️ Comentário na diff criado com sucesso! ({file_path}:{position})")
+            else:
+                print(f"❌ Erro ao criar comentário na diff: {response.text}")

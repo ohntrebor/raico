@@ -158,7 +158,7 @@ def gemini_pr_review_file_inline(ai_api_key, github_token, repo_name, pr_number,
                 else:
                     if grouped_suggestions:
                         comment_text = "\n\n".join(grouped_suggestions)
-                        github_handler.post_inline_comment(repo_name, pr_number, file_path, last_position, comment_text)
+                        github_handler.post_inline_comment_with_diff(repo_name, pr_number, file_path, patch_content, comment_text)
                     grouped_suggestions = [suggestion]
 
                 last_position = line_number
@@ -166,7 +166,7 @@ def gemini_pr_review_file_inline(ai_api_key, github_token, repo_name, pr_number,
             # Postar o último grupo de comentários
             if grouped_suggestions:
                 comment_text = "\n\n".join(grouped_suggestions)
-                github_handler.post_inline_comment(repo_name, pr_number, file_path, last_position, comment_text)
+                github_handler.post_inline_comment_with_diff(repo_name, pr_number, file_path, patch_content, comment_text)
 
             print(f"✅ Revisão concluída para `{file_path}`\n")
 
