@@ -99,3 +99,43 @@ Após uma revisão detalhada do seu Pull Request, aqui estão as minhas consider
             print("Comentário de erro criado com sucesso!")
         except Exception as e:
             print(f"Erro ao criar comentário de erro no PR: {e}")
+
+    def post_inline_comment(self, repo_name, pr_number, file_path, line_number, comment_body):
+        """
+        Publica um comentário inline diretamente na diff do Pull Request.
+
+        Args:
+            repo_name (str): Nome do repositório no formato "owner/repo".
+            pr_number (int): Número do Pull Request.
+            file_path (str): Caminho do arquivo que foi alterado no PR.
+            line_number (int): Número da linha onde o comentário deve ser feito.
+            comment_body (str): Conteúdo do comentário.
+        """
+        headers = {"Authorization": f"Bearer {self.github_token}"}
+
+        # Buscar a lista de commits para obter o último commit
+        url_commits = f"https://api.github.com/repos/{repo_name}/pulls/{pr_number}/commits"
+        response = requests.get(url_commits, headers=headers)
+
+        if response.status_code != 200:
+            print(f"Erro ao obter commits do PR: {response.text}")
+            return
+
+        commits = response.json()
+        commit_id = commits[-1]["sha"]  # Pegamos o último commit do PR
+
+        # Criar comentário na diff
+        url_comments = f"https://api.github.com/repos/{repo_name}/pulls/{pr_number}/comments"
+        payload = {
+            "body": comment_body,
+            "commit_id": commit_id,
+            "path": file_path,
+            "position": line_number,  # Linha do arquivo onde o comentário será feito
+        }
+
+        response = requests.post(url_comments, headers=headers, json=payload)
+
+        if response.status_code == 201:
+            print(f"Comentário na diff criado com sucesso! ({file_path}:{line_number})")
+        else:
+            print(f"Erro ao criar comentário na diff: {response.text}")
