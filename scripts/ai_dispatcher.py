@@ -1,9 +1,14 @@
 import os
 from enum import Enum
+
 from scripts.gemini_pr_review_file import gemini_pr_review_file
 from scripts.gemini_pr_review_line import gemini_pr_review_line
+
 from scripts.openai_pr_review_file import openai_pr_review_file
 from scripts.openai_pr_review_line import openai_pr_review_line
+
+from scripts.claude_pr_review_file import claude_pr_review_file  
+from scripts.claude_pr_review_line import claude_pr_review_line
 
 class ReviewType(Enum):
     FILE_DIFF_REVIEW = "1"
@@ -70,6 +75,28 @@ def ai_dispatcher():
             ai_version=ai_version
         )
 
+    # Provider Claude - File Diff Review
+    def method_claude_pr_review_file():
+        return claude_pr_review_file(
+            ai_api_key=ai_api_key,
+            github_token=github_token,
+            repo_name=repo_name,
+            pr_number=pr_number,
+            prompt_path=prompt_path,
+            ai_model=ai_model
+        )
+
+    # Provider Claude - Line Diff Review
+    def method_claude_pr_review_line():
+        return claude_pr_review_line(
+            ai_api_key=ai_api_key,
+            github_token=github_token,
+            repo_name=repo_name,
+            pr_number=pr_number,
+            prompt_path=prompt_path,
+            ai_model=ai_model
+        )
+
     # Provedores Integrados
     provider_methods = {
         "openai": {
@@ -79,7 +106,10 @@ def ai_dispatcher():
         "gemini": {
             ReviewType.FILE_DIFF_REVIEW.value: method_gemini_pr_review_file,
             ReviewType.LINE_DIFF_REVIEW.value: method_gemini_pr_review_line,
-
+        },
+        "claude": {
+            ReviewType.FILE_DIFF_REVIEW.value: method_claude_pr_review_file,
+            ReviewType.LINE_DIFF_REVIEW.value: method_claude_pr_review_line,
         },
     }
 
