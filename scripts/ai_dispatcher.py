@@ -4,19 +4,27 @@ from enum import Enum
 from scripts.gemini_pr_review_file import gemini_pr_review_file
 from scripts.gemini_pr_review_line import gemini_pr_review_line
 from scripts.gemini_pr_review_line_inline import gemini_pr_review_line_inline
+from scripts.gemini_pr_review_file_inline import gemini_pr_review_file_inline
+
 
 from scripts.openai_pr_review_file import openai_pr_review_file
 from scripts.openai_pr_review_line import openai_pr_review_line
 from scripts.openai_pr_review_line_inline import openai_pr_review_line_inline
+from scripts.openai_pr_review_file_inline import openai_pr_review_file_inline
+
 
 from scripts.claude_pr_review_file import claude_pr_review_file  
 from scripts.claude_pr_review_line import claude_pr_review_line
 from scripts.claude_pr_review_line_inline import claude_pr_review_line_inline
+from scripts.claude_pr_review_file_inline import claude_pr_review_file_inline
+
 
 class ReviewType(Enum):
-    FILE_DIFF_REVIEW = "1"  # Revisão baseada no arquivo completo
-    LINE_DIFF_REVIEW = "2"  # Revisão baseada em mudanças linha por linha
-    INLINE_COMMENT_REVIEW = "3"  # Revisão que adiciona comentários diretamente na diff
+    FILE_DIFF_REVIEW = "1"  # Revisão baseada no arquivo completo, e comenta no PR
+    LINE_DIFF_REVIEW = "2"  # Revisão baseada em mudanças linha por linha, e comenta no PR
+    INLINE_COMMENT_REVIEW = "3"  # Revisão baseada em mudanças linha por linha, e comenta no Diff
+    FILE_INLINE_REVIEW = "4"  # Revisão baseada no arquivo completo, e comenta no Diff
+
 
 def ai_dispatcher():
     """
@@ -135,23 +143,63 @@ def ai_dispatcher():
             ai_model=ai_model
         )
 
+# Provider OpenAI - File Inline Review
+    def method_openai_pr_review_file_inline():
+        return openai_pr_review_file_inline(
+            ai_api_key=ai_api_key,
+            github_token=github_token,
+            repo_name=repo_name,
+            pr_number=pr_number,
+            prompt_path=prompt_path,
+            ai_model=ai_model
+        )
 
-    # Provedores Integrados
+    # Provider Gemini - File Inline Review
+    def method_gemini_pr_review_file_inline():
+        return gemini_pr_review_file_inline(
+            ai_api_key=ai_api_key,
+            github_token=github_token,
+            repo_name=repo_name,
+            pr_number=pr_number,
+            prompt_path=prompt_path,
+            ai_model=ai_model,
+            ai_version=ai_version
+        )
+
+    # Provider Claude - File Inline Review
+    def method_claude_pr_review_file_inline():
+        return claude_pr_review_file_inline(
+            ai_api_key=ai_api_key,
+            github_token=github_token,
+            repo_name=repo_name,
+            pr_number=pr_number,
+            prompt_path=prompt_path,
+            ai_model=ai_model
+        )
+
+
+# Provedores Integrados
     provider_methods = {
         "openai": {
             ReviewType.FILE_DIFF_REVIEW.value: method_openai_pr_review_file,
             ReviewType.LINE_DIFF_REVIEW.value: method_openai_pr_review_line,
             ReviewType.INLINE_COMMENT_REVIEW.value: method_openai_pr_review_inline,
+            ReviewType.FILE_INLINE_REVIEW.value: method_openai_pr_review_file_inline,
+
         },
         "gemini": {
             ReviewType.FILE_DIFF_REVIEW.value: method_gemini_pr_review_file,
             ReviewType.LINE_DIFF_REVIEW.value: method_gemini_pr_review_line,
             ReviewType.INLINE_COMMENT_REVIEW.value: method_gemini_pr_review_inline,
+            ReviewType.FILE_INLINE_REVIEW.value: method_gemini_pr_review_file_inline,
+
         },
         "claude": {
             ReviewType.FILE_DIFF_REVIEW.value: method_claude_pr_review_file,
             ReviewType.LINE_DIFF_REVIEW.value: method_claude_pr_review_line,
             ReviewType.INLINE_COMMENT_REVIEW.value: method_claude_pr_review_inline,
+            ReviewType.FILE_INLINE_REVIEW.value: method_claude_pr_review_file_inline,
+
         },
     }
 
